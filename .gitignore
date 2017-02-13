@@ -1,0 +1,11 @@
+#this is comment
+
+.idea/*
+*.txt
+*.txt.*
+*.ignore
+*.ignore.*
+ignore.*
+* ignore *
+ignore *
+* ignore*
