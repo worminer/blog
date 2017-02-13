@@ -1,14 +1,11 @@
-#this is comment
-
-.idea/*
-*.txt
-*.txt.*
+#custom ignores
 *.ignore
 *.ignore.*
 ignore.*
 * ignore *
 ignore *
 * ignore*
+
 ### SublimeText template
 # cache files for sublime text
 *.tmlanguage.cache
