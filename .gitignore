@@ -5,6 +5,10 @@ ignore.*
 * ignore *
 ignore *
 * ignore*
+.idea/
+/.idea/php.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
 *.idea
 
 ### SublimeText template
@@ -78,4 +82,5 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
 
