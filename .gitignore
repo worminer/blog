@@ -5,6 +5,7 @@ ignore.*
 * ignore *
 ignore *
 * ignore*
+*.idea
 
 ### SublimeText template
 # cache files for sublime text
