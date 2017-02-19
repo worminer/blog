@@ -1,11 +1,4 @@
 <?php
-// autoload config file
-if (!file_exists(APP_CONFIG)) {
-    die('Config file is missing');
-}else {
-    require_once (APP_CONFIG);
-}
-
 // Autoload Classes, Controllers, Models, and Views
 define("AUTOLOAD_ITEMS", array(CLASSES, CONTROLLERS, MODELS));        // add autoload items in the order they will be loaded
 // auto loads controller/models/views when called

@@ -9,6 +9,9 @@ class TestModel
      */
     public function __construct()
     {
-        echo "i am model".PHP_EOL;
+        if (DEBUG_MVC) {
+            echo "<hr>I am model<br>".PHP_EOL;
+        }
+
     }
 }
