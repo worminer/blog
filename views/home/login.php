@@ -1,7 +1,6 @@
 <?php
 session_start();
 ?>
-
 <!-- Blog Entries Column -->
 <div class="container">
     <div class="row">
