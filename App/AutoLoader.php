@@ -42,17 +42,17 @@ final class AutoLoader {
             if (strpos($class, $namespace) === 0) {
                 $filePath = str_replace("\\", DIRECTORY_SEPARATOR , $class); // change the \ in the path with the real os path reperator
                 $filePath = substr_replace($filePath, $path, 0 , strlen($namespace)).".php";
-                $filePath = realpath($filePath);
+                $realFilePath = realpath($filePath);
                 // if this path does not exist, throw an exception!
-                if (!$filePath) {
+                if (!$realFilePath) {
                     throw new \Exception("ERROR: File does not exist - {$filePath}");
                 }
                 // if this file is not readable for some reason, throw an exception!
-                if (!is_readable($filePath)) {
-                    throw new \Exception("ERROR: This File is not readable - {$filePath}");
+                if (!is_readable($realFilePath)) {
+                    throw new \Exception("ERROR: This File is not readable - {$realFilePath}");
                 }
                 // if everything is ok.. include and break;
-                include $filePath;
+                include $realFilePath;
                 break;
             }
         }
@@ -83,6 +83,16 @@ final class AutoLoader {
 
             // if everything is ok .. set it as a valid [namespace => path]
             self::$namespaces[$namespace.'\\'] = $pathToFolder.DIRECTORY_SEPARATOR;
+        }else {
+            throw new \Exception("ERROR: This Path to folder is not correct - {$pathToFolder}");
+        }
+    }
+
+    public static function registerNamespaces(array $namespaces){
+        if (is_array($namespaces)) {
+            foreach ($namespaces as $namespace => $path) {
+                self::registerNamespace($namespace, $path);
+            }
         }
     }
 }

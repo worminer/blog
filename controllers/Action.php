@@ -1,7 +1,7 @@
 <?php
 
-
-class HomeController
+namespace Controllers;
+class Action
 {
 
 
@@ -19,11 +19,19 @@ class HomeController
     }
 
     public function index(){
-        if (DEBUG_MVC) {
-            echo "<hr>I am HomeController->index<br>".PHP_EOL;
-        }
-        $varArr = ["test" => "proba"];
 
-        new View("home/index",$varArr);
+            echo "<hr>I am action controller->index<br>".PHP_EOL;
+
+//        $varArr = ["test" => "proba"];
+//
+//        new View("home/index",$varArr);
+    }
+    public function index2(){
+
+            echo "<hr>I am action controller->indexx!!<br>".PHP_EOL;
+
+//        $varArr = ["test" => "proba"];
+//
+//        new View("home/index",$varArr);
     }
 }
