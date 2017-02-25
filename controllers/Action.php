@@ -1,6 +1,8 @@
 <?php
 
 namespace Controllers;
+use MVC\View;
+
 class Action
 {
 
@@ -42,5 +44,6 @@ class Action
         //this->password == $password
         // go to model
         //else { new View("home/wrongLogin");
+        new View("home/wrongLogin");
     }
 }
