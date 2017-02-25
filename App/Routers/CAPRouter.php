@@ -18,9 +18,9 @@ class CAPRouter
      */
     private $action = null;
     /**
-     * @var string
+     * @var array
      */
-    private $params = null;
+    private $params = [];
 
     /**
      * returns URI
@@ -77,7 +77,7 @@ class CAPRouter
     }
 
     /**
-     * @return static
+     * @return
      * returns the namespace .. but in this case we return null so we can get the default namespace ..
      * because we don't have mechanics to get namespace from this parser..
      */

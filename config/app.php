@@ -24,6 +24,15 @@ $config["namespaces"] = [
     "Controllers" => $config["root_dir"].DS.'controllers'
 ];
 
-
+/** SESSION CONFIGURATION **/
+$config["session"] = [
+    "autostart" => false,
+    "type"      => "native",
+    "name"      => "_sess",
+    "lifetime"  => 3600,
+    "path"      => "/",
+    "domain"    => "",
+    "secure"    => false,
+];
 
 return $config;

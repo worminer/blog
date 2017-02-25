@@ -10,7 +10,7 @@ class View {
     private $_config = null;
     private $viewConfig = null;
 
-    public function __construct(string $view, array $data, string $layout = null) {
+    public function __construct(string $view, array $data = [], string $layout = null) {
         $this->_config = Config::getInstance();
         $this->viewConfig = $this->_config->view;
         $this->viewName = $view;

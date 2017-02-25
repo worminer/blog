@@ -1,6 +1,8 @@
 <?php
 namespace MVC;
 
+use MVC\Session\SessionInterface;
+
 require_once("AutoLoader.php");
 
 
@@ -24,12 +26,19 @@ class App {
      */
     private $_frontController = null;
     /**
+     * @var array
+     * will hold database connections
+     */
+    private $_DbConnections = [];
+    /**
+     * @var SessionInterface
+     * will hold session obj
+     */
+    private $_session = null;
+
+    /**
      * App constructor.
      */
-
-    private $_DbConnections = [];
-
-
     private function __construct()
     {
         // registering namespace MVC
@@ -51,6 +60,9 @@ class App {
         return self::$_instance;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function run(){
         // if there is no config folder set..sets the default one
         if ($this->_config->getConfigFolderPath() == null) {
@@ -67,10 +79,41 @@ class App {
         } else {
             throw new \Exception("ERROR: Default Router is not defined at Routers config");
         }
+
+        //session settings
+        $sessionConfig = $this->_config->app['session'];
+        if ($sessionConfig["autostart"]) {
+            if ($sessionConfig["type"] == "native") {
+                echo "i am here";
+                $this->_session  = new Session\NativeSession($sessionConfig["name"],$sessionConfig["lifetime"],$sessionConfig["path"],$sessionConfig["domain"], $sessionConfig["secure"]);
+            }
+        }
+
         // and we dispatch ..
         $this->_frontController->dispatcher();
     }
+    /**
+     * @param string $view
+     * @param array $data
+     * @param null $layout
+     */
+    public static function render(string $view, array $data, $layout = null){
+        new View($view,$data,$layout);
+    }
 
+    public function setSession(Session\SessionInterface $session){
+        $this->_session = $session;
+    }
+    public function getSession(){
+        return $this->_session;
+    }
+
+
+    /**
+     * @param string $connectionName
+     * @return \PDO
+     * @throws \Exception
+     */
     public function getDbConnection(string $connectionName = "default"){
         //check if connection name is not false,empty null or whatever
         if (!$connectionName) {
@@ -108,12 +151,12 @@ class App {
 
     //ROUTER FUNCTIONALITY
 
+    /**
+     * @param string $routerName
+     */
     public function setRouter(string $routerName) {
         $this->_frontController->setRouterSettings([$routerName]);
     }
 
-    public static function render(string $view, array $data, $layout = null){
-        new View($view,$data,$layout);
-    }
 
 }
