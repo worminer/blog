@@ -11,7 +11,7 @@ class Home
      * @param $params
      */
     public function index($params){
-
+        
         $varArr = [
             "test" => "proba",
             "sub_title" => "- Index1@Home Subtitle"

@@ -72,6 +72,7 @@ class Config
             
             $this->configFolderFilesArrays[$fileName] = include $realPathToFile;
         } else {
+            echo $realPathToFile.' as '.$pathToFile;
             throw new \Exception("ERROR: This Path to config file is not correct - {$pathToFile}");
         }
     }
