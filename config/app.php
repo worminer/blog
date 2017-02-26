@@ -26,13 +26,16 @@ $config["namespaces"] = [
 
 /** SESSION CONFIGURATION **/
 $config["session"] = [
-    "autostart" => false,
-    "type"      => "native",
-    "name"      => "_sess",
-    "lifetime"  => 3600,
-    "path"      => "/",
-    "domain"    => "",
-    "secure"    => false,
+    "autostart"     => true,
+    //"type"          => "dbsession", // for db session
+    "type"        => "native",  // for native cookie session
+    "name"          => "_sess",
+    "lifetime"      => 3600,
+    "path"          => "/",
+    "domain"        => "",
+    "secure"        => false,
+    "dbConnection"  => "default", // not required for DB session and not required for native
+    "dbTable"       => "sessions", // not required for DB session and not required for native
 ];
 
 return $config;

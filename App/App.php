@@ -36,6 +36,8 @@ class App {
      */
     private $_session = null;
 
+    private $_validator = null;
+
     /**
      * App constructor.
      */
@@ -84,9 +86,13 @@ class App {
         $sessionConfig = $this->_config->app['session'];
         if ($sessionConfig["autostart"]) {
             if ($sessionConfig["type"] == "native") {
-                echo "i am here";
-                $this->_session  = new Session\NativeSession($sessionConfig["name"],$sessionConfig["lifetime"],$sessionConfig["path"],$sessionConfig["domain"], $sessionConfig["secure"]);
+                $this->_session  = new \MVC\Session\NativeSession($sessionConfig["name"],$sessionConfig["lifetime"],$sessionConfig["path"],$sessionConfig["domain"], $sessionConfig["secure"]);
+            } else if ($sessionConfig["type"] == "dbsession") {
+                $this->_session  = new \MVC\Session\DBSession($sessionConfig["dbConnection"] ,$sessionConfig["name"], $sessionConfig["dbTable"], $sessionConfig["lifetime"], $sessionConfig["path"], $sessionConfig["domain"], $sessionConfig["secure"]);
+            } else {
+                throw new \Exception("ERROR: There is no valid Session identification parameter in app config -> app['session']['type']");
             }
+
         }
 
         // and we dispatch ..
@@ -115,6 +121,7 @@ class App {
      * @throws \Exception
      */
     public function getDbConnection(string $connectionName = "default"){
+
         //check if connection name is not false,empty null or whatever
         if (!$connectionName) {
             throw new \Exception("ERROR DB: Connection name is not set!",500);
@@ -158,5 +165,18 @@ class App {
         $this->_frontController->setRouterSettings([$routerName]);
     }
 
+    public function validator(){
+        if ($this->_validator == null) {
+            $this->_validator = Validation::getInstance();
+        }
+        return $this->_validator;
+    }
 
+    public function __destruct()
+    {
+        if ($this->_session != null) {
+            $this->_session->saveSession();
+        }
+
+    }
 }

@@ -4,6 +4,7 @@
 /**
  * Class PdoMysql
  */
+namespace MVC\Database;
 class PdoMysql
 {
     /**
@@ -15,7 +16,7 @@ class PdoMysql
      */
     private $db = null;
     /**
-     * @var PDOStatement
+     * @var \PDOStatement
      */
     private $stmt = null;
     /**
@@ -37,11 +38,10 @@ class PdoMysql
             $this->connectionName = $connection;
         } else if($connection != null) {
             $this->connectionName = $connection;
-            $this->db = MVC\App::getInstance()->getDbConnection($connection);
+            $this->db = \MVC\App::getInstance()->getDbConnection($connection);
         } else {
-            $this->db = MVC\App::getInstance()->getDbConnection($this->connectionName);
+            $this->db = \MVC\App::getInstance()->getDbConnection($this->connectionName);
         }
-
     }
 
     /**
@@ -50,7 +50,7 @@ class PdoMysql
      * @param array $pdoOptions
      * @return PdoMysql $this
      */
-    public function prepare(string $sql, array $params = array(), array $pdoOptions) {
+    public function prepare(string $sql, array $params = [], array $pdoOptions = []) {
         $this->stmt = $this->db->prepare($sql,$pdoOptions);
         $this->params = $params;
         $this->sql = $sql;

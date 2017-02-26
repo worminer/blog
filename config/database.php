@@ -17,7 +17,7 @@ $db["default"] = [
     "password" => "",           // DB password
 ];
 
-$db["default"][ "connection_url"] = $db["default"]["adapter_type"].":host=". $db["default"]["host"] .";db=". $db["default"]["db_name"]; // PDO connection string
+$db["default"][ "connection_url"] = $db["default"]["adapter_type"].":host=". $db["default"]["host"] .";dbname=". $db["default"]["db_name"]; // PDO connection string
 
 
 return $db;

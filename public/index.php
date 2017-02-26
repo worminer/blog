@@ -4,7 +4,5 @@ require_once("." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "App" . DI
 
 
 $app = MVC\App::getInstance();
-
 $app->run();
-//echo $app->getConfig()->app["test"];
 
