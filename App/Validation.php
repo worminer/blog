@@ -80,8 +80,8 @@ class Validation
      * evaluate if param 1 == param 2
      * @return bool
      */
-    public static function maches($param1, $param2){
-        return $param1 == $param2;
+    public static function matches($val1, $val2) {
+        return $val1 == $val2;
     }
 
     /**
@@ -100,10 +100,6 @@ class Validation
         } else {
             return $val != '';
         }
-    }
-
-    public static function matches($val1, $val2) {
-        return $val1 == $val2;
     }
 
     public static function matchesStrict($val1, $val2) {

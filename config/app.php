@@ -21,7 +21,8 @@ $config["site_title"] = "Team Darby Blog"; // site title
  * to start autoloading it have to have at least one key=>value pair
  */
 $config["namespaces"] = [
-    "Controllers" => $config["root_dir"].DS.'controllers'
+    "Controllers" => $config["root_dir"].DS.'controllers',
+    "Models" => $config["root_dir"].DS.'models'
 ];
 
 /** SESSION CONFIGURATION **/
@@ -37,5 +38,6 @@ $config["session"] = [
     "dbConnection"  => "default", // not required for DB session and not required for native
     "dbTable"       => "sessions", // not required for DB session and not required for native
 ];
-
+//error handeling TODO:FIX IT
+$config["displayExceptions"] = true;
 return $config;

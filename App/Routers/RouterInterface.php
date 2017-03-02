@@ -33,4 +33,9 @@ interface RouterInterface
      */
     public function getControllerNamespace();
 
+    /**
+     * @return mixed
+     * ill return post params
+     */
+    public function getPost();
 }

@@ -6,7 +6,7 @@ namespace MVC\Routers;
 
 use MVC\Utill;
 
-class CAPRouter
+class CAPRouter implements RouterInterface
 {
 
     /**
@@ -22,14 +22,12 @@ class CAPRouter
      */
     private $params = [];
 
+    private $postData = [];
     /**
      * returns URI
      * @return string
      */
-    public function getURI()
-    {
-
-
+    public function getURI(){
         return Utill::getCleanLinkURI();
     }
     /**
@@ -50,6 +48,7 @@ class CAPRouter
             $this->action = strtolower(array_splice($urlParams,0,1)[0]);
         }
         $this->params = $urlParams;
+        $this->postData = $_POST;
     }
 
     /**
@@ -77,12 +76,17 @@ class CAPRouter
     }
 
     /**
-     * @return
+     *
      * returns the namespace .. but in this case we return null so we can get the default namespace ..
      * because we don't have mechanics to get namespace from this parser..
      */
     public function getControllerNamespace()
     {
         return null;
+    }
+
+    public function getPost()
+    {
+       return $this->postData;
     }
 }

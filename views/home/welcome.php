@@ -4,7 +4,7 @@ session_start();
 if(!$_SESSION['email'])
 {
 
-    header("Location: login.phtml");
+    header("Location: loginView.phtml");
 }
 
 ?>

@@ -66,8 +66,10 @@ class FrontController
         if ($action == null) {
             $action = ucfirst($this->getDefaultAction());
         }
-
-        $params     = $router->getGetParams();
+        // putting get and post in input data manager
+        $inputData = \MVC\InputData::getInstance();
+        $inputData->setGet($router->getGetParams());
+        $inputData->setPost($router->getPost());
 
         $namespace  = $router->getControllerNamespace();
         if ($namespace == null) {
@@ -80,7 +82,7 @@ class FrontController
         //echo $controller."->".$action."<br>";
         $currentController = new $controllerToCall();
 
-        $currentController->$action($params);
+        $currentController->$action();
     }
 
     public function getDefaultController(){

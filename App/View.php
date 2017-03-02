@@ -2,39 +2,124 @@
 namespace MVC;
 
 class View {
-    // this probably should get singleton but i am to lazy and it will be used just once anyway
-    private $layoutName; // layout to load
-    private $viewName; // view to load
-    private $data = []; // data to load
-    private $html;
+
+    /**
+     * @var View
+     */
+    private static $_instance = null;
+    /**
+     * @var Config
+     */
     private $_config = null;
+
+    /**
+     * @var string
+     */
+    private $layoutName; // layout to load
+    /**
+     * @var string
+     */
+    private $viewName; // view to load
+    /**
+     * @var array
+     */
+    private $data = []; // data to load
+    /**
+     * @var MessagesManager
+     *  holds instance of massage manager
+     */
+    private $_messageManager = null;
+    /**
+     * @var
+     * holds the loaded html
+     */
+    private $html;
+    /**
+     * @var array
+     * hold the view configuration array
+     */
     private $viewConfig = null;
 
-    public function __construct(string $view, array $data = [], string $layout = null) {
+    /**
+     * @param string $view
+     * @param array  $data
+     * @param array  $messages
+     * @param string|null $layout
+     */
+    public function render(string $view, array $data = [], array $messages = [], string $layout = null){
         $this->_config = Config::getInstance();
         $this->viewConfig = $this->_config->view;
         $this->viewName = $view;
-        $this->data = $data;
+        $this->data = array_merge($this->data, $data);
         if ($layout == null) {
             $this->layoutName = $this->viewConfig["DEFAULT_LAYOUT"];
         } else {
             $this->layoutName = $layout;
         }
 
+        $this->loadLayout();
+        $this->insertBodyView();
+        $this->insertAllPartials();
+        $this->insertMessages();
+        $this->replaceGlobalVariables();
+        $this->replaceVariables();
 
-        $this->render();
+        die($this->getHtml()) ;
+
     }
+
+    /**
+     * @param string$path
+     * @param array|string $messages
+     * @param string $type
+     */
+    public function redirect(string $path,$messages = null, $type = "error") {
+        if ($messages != null) {
+            $this->getMessageManager()->setMessage($type, $messages);
+        }
+        header("Location: {$path}");
+        die();
+    }
+
+    public function insertMessages(){
+        // TODO: FIX THIS so messages will be inserted inside the template
+        var_dump($this->getMessageManager()->getAllMessages());
+        $this->getMessageManager()->flushAllMessages();
+    }
+
+    public function getMessageManager(){
+
+        if (!$this->_messageManager INSTANCEOF MessagesManager) {
+            $this->_messageManager = MessagesManager::getInstance();
+        }
+        return $this->_messageManager;
+    }
+
+    /**
+     * @return View
+     */
+    public static function getInstance():View{
+        if (self::$_instance == null) {
+            self::$_instance = new View();
+        }
+        return self::$_instance;
+    }
+
 
     public function loadLayout(){
 
         $layoutPath = $this->viewConfig["VIEW_FOLDER"].DIRECTORY_SEPARATOR.$this->getLayoutName().$this->viewConfig["TEMPLATE_EXT"];
 
         if (!file_exists($layoutPath)) {
-            return "Error loading template file ($layoutPath).";
+            throw new \Exception("Error loading template file ($layoutPath).");
         }
         $this->setHtml(file_get_contents($layoutPath));
     }
 
+    /**
+     * @param string $viewName
+     * @return string
+     */
     public function loadView(string $viewName){
         $viewPath = $this->viewConfig["VIEW_FOLDER"].DIRECTORY_SEPARATOR.$viewName."View".$this->viewConfig["TEMPLATE_EXT"];
         if (!file_exists($viewPath)) {
@@ -43,10 +128,16 @@ class View {
         return file_get_contents($viewPath) ;
     }
 
+    /**
+     *
+     */
     public function insertBodyView() {
             $this->setHtml(str_replace($this->viewConfig["TEMPLATE_BODY_TAG"], $this->loadView(trim($this->getViewName())), $this->getHtml()));
     }
 
+    /**
+     *
+     */
     public function replaceVariables() {
         foreach ($this->data as $key => $value) {
             $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
@@ -54,6 +145,9 @@ class View {
         }
     }
 
+    /**
+     *
+     */
     public function replaceGlobalVariables() {
         foreach ($this->_config->app as $key => $value) {
             // ignore arrays because they are not supported
@@ -65,6 +159,9 @@ class View {
         }
     }
 
+    /**
+     *
+     */
     private function insertAllPartials(){
         foreach ($this->getListAllPartials() as $partialName) {
             $replaceTag = str_replace("%PARTIAL_NAME%"," *". $partialName ." *",$this->viewConfig["TEMPLATE_PARTIAL"]);
@@ -74,12 +171,19 @@ class View {
         }
     }
 
+    /**
+     * @return mixed
+     */
     private function getListAllPartials (){
         $replaceTag = str_replace("%PARTIAL_NAME%"," *(\\w+) *",$this->viewConfig["TEMPLATE_PARTIAL"]);
         preg_match_all($replaceTag,$this->getHtml(),$matches);
         return $matches[1];
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     private function loadPartial(string $name){
         $partialPath = $this->viewConfig["PARTIALS_FOLDER"].DIRECTORY_SEPARATOR.$name."Partial".$this->viewConfig["TEMPLATE_EXT"];
         if (!file_exists($partialPath)) {
@@ -111,13 +215,6 @@ class View {
         return $this->viewName;
     }
 
-    /**
-     * @param string $viewName
-     */
-    private function setViewName(string $viewName)
-    {
-        $this->viewName = $viewName;
-    }
      /**
      * @return string
      */
@@ -127,15 +224,6 @@ class View {
         return $this->layoutName;
     }
 
-    public function render(){
 
-        $this->loadLayout();
-        $this->insertBodyView();
-        $this->insertAllPartials();
-        $this->replaceGlobalVariables();
-        $this->replaceVariables();
-
-        echo $this->getHtml();
-    }
 
 }

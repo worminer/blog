@@ -80,4 +80,9 @@ class CleanLinkRouter implements RouterInterface
     {
         return null;
     }
+
+    public function getPost()
+    {
+        // TODO: Implement getPost() method.
+    }
 }

@@ -36,13 +36,28 @@ class App {
      */
     private $_session = null;
 
+    /**
+     * @var Validation
+     * will hold getValidator object
+     */
     private $_validator = null;
+    /**
+     * @var InputData
+     * will hold input data object
+     */
+    private $_inputData = null;
+
+    /**
+     * @var View
+     */
+    private $_view = null;
 
     /**
      * App constructor.
      */
     private function __construct()
     {
+        //set_exception_handler([$this, "_exceptionHandler"]);
         // registering namespace MVC
         AutoLoader::registerNamespace("MVC", dirname(__FILE__));
         // register the autoload function that will be called when file is needed..
@@ -98,19 +113,22 @@ class App {
         // and we dispatch ..
         $this->_frontController->dispatcher();
     }
-    /**
-     * @param string $view
-     * @param array $data
-     * @param null $layout
-     */
-    public static function render(string $view, array $data, $layout = null){
-        new View($view,$data,$layout);
+
+    public function view(){
+        if ($this->_view == null) {
+            $this->_view = View::getInstance();
+        }
+        return $this->_view;
     }
 
-    public function setSession(Session\SessionInterface $session){
+    /**
+     * @param SessionInterface $session
+     */public function setSession(Session\SessionInterface $session){
         $this->_session = $session;
     }
-    public function getSession(){
+    /**
+     * @return SessionInterface
+     */public function getSession(){
         return $this->_session;
     }
 
@@ -165,14 +183,44 @@ class App {
         $this->_frontController->setRouterSettings([$routerName]);
     }
 
-    public function validator(){
+    /**
+     * @return Validation|null
+     */public function getValidator(){
         if ($this->_validator == null) {
             $this->_validator = Validation::getInstance();
         }
         return $this->_validator;
     }
+    /**
+     * @return InputData|null
+     */public function inputData(){
+        if ($this->_inputData == null) {
+            $this->_inputData = InputData::getInstance();
+        }
+        return $this->_inputData;
+    }
 
-    public function __destruct()
+    public function _exceptionHandler(\Exception $exception){
+
+        if (isset($this->_config) && isset($this->_config->app["displayExceptions"])) {
+            echo "<pre>" . print_r($exception, true) . "</pre>";
+        } else {
+            $this->displayError($exception->getCode());
+        }
+    }
+
+    public function displayError($errorCode) {
+        try{
+            $this->view()->render("errors/".$errorCode);
+        }catch (\Exception $e){
+            die($e->getMessage());
+        }
+
+    }
+
+    /**
+     *
+     */public function __destruct()
     {
         if ($this->_session != null) {
             $this->_session->saveSession();
