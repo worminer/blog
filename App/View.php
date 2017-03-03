@@ -64,6 +64,11 @@ class View {
         $this->replaceGlobalVariables();
         $this->replaceVariables();
 
+        if (isset($this->_config->app["auto_insert_site_root"]) && $this->_config->app["auto_insert_site_root"] === true) {
+            $this->insertURLPublicFolderPrefix($this->_config->app["site_root"]);
+        }
+
+
         die($this->getHtml()) ;
 
     }
@@ -81,12 +86,18 @@ class View {
         die();
     }
 
+    /**
+     *
+     */
     public function insertMessages(){
         // TODO: FIX THIS so messages will be inserted inside the template
         var_dump($this->getMessageManager()->getAllMessages());
         $this->getMessageManager()->flushAllMessages();
     }
 
+    /**
+     * @return MessagesManager
+     */
     public function getMessageManager(){
 
         if (!$this->_messageManager INSTANCEOF MessagesManager) {
@@ -94,6 +105,8 @@ class View {
         }
         return $this->_messageManager;
     }
+
+
 
     /**
      * @return View
@@ -106,6 +119,9 @@ class View {
     }
 
 
+    /**
+     * @throws \Exception
+     */
     public function loadLayout(){
 
         $layoutPath = $this->viewConfig["VIEW_FOLDER"].DIRECTORY_SEPARATOR.$this->getLayoutName().$this->viewConfig["TEMPLATE_EXT"];
@@ -133,6 +149,18 @@ class View {
      */
     public function insertBodyView() {
             $this->setHtml(str_replace($this->viewConfig["TEMPLATE_BODY_TAG"], $this->loadView(trim($this->getViewName())), $this->getHtml()));
+    }
+
+    /**
+     * inserts path to public dir in all local links
+     * href="home/index" becomes href="/Path/To/Public/home/index"
+     * @param $publicFolder
+     */
+    public function insertURLPublicFolderPrefix($publicFolder){
+        $patern = '(?<=(?:href=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|))*)(?=\'|")';
+        //preg_match_all("/{$patern}/", $this->getHtml(),$matches);
+        //var_dump($matches);
+        $this->setHtml(preg_replace("/{$patern}/i", "{$publicFolder}$1", $this->getHtml()));
     }
 
     /**
@@ -191,6 +219,8 @@ class View {
         }
         return file_get_contents($partialPath) ;
     }
+
+
 
     /**
      * @return mixed

@@ -99,6 +99,7 @@ class App {
 
         //session settings
         $sessionConfig = $this->_config->app['session'];
+
         if ($sessionConfig["autostart"]) {
             if ($sessionConfig["type"] == "native") {
                 $this->_session  = new \MVC\Session\NativeSession($sessionConfig["name"],$sessionConfig["lifetime"],$sessionConfig["path"],$sessionConfig["domain"], $sessionConfig["secure"]);
