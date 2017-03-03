@@ -21,7 +21,7 @@ class User extends DefaultController
         // if there is no such param that means that the wrong form was send or someone access the /user /registerPost url!
         // that means, we haveto redirect the user to the register form
         if ($input->post("login") == null) {
-            $this->view->redirect("register");
+            $this->view->redirect("/user/register");
         }
 
         $email = $input->post('email'); // get the email from  post request
@@ -36,7 +36,7 @@ class User extends DefaultController
         // validate all filters and if there is an error .. we have to redirect and display the errors
         if ($this->validate->validate() === false) {
             $errors = $this->validate->getErrors();
-            $this->view->redirect("login",$errors);
+            $this->view->redirect("/user/login",$errors);
         }
 
         //if we are at this point of the code .. this means that everything is ok with our form information and we can register out user
@@ -47,7 +47,7 @@ class User extends DefaultController
         // we check if there is user with that username in database. If there is one we need to redirect to register form and display the error
         if (!$userModel->userExist($email)) {
             $error = "There is no such user registered!";
-            $this->view->redirect("login",$error);
+            $this->view->redirect("/user/login",$error);
         }
 
 
@@ -65,7 +65,7 @@ class User extends DefaultController
         }catch (\Exception $exception){
             // if there is a problem with the registration we log the message and redirect to the registration page
             $message = $exception->getMessage();
-            $this->view->redirect("register",$message);
+            $this->view->redirect("/user/register",$message);
         }
     }
 
@@ -86,7 +86,7 @@ class User extends DefaultController
         // that means, we haveto redirect the user to the register form
         if ($input->post("register") == null) {
 
-            $this->view->redirect("register");
+            $this->view->redirect("/user/register");
         }
 
         $email = $input->post('email'); // get the email from  post
@@ -103,7 +103,7 @@ class User extends DefaultController
         // validate all filters and if there is an error .. we have to redirect and display the errors
         if ($this->validate->validate() === false) {
             $errors = $this->validate->getErrors();
-            $this->view->redirect("register",$errors);
+            $this->view->redirect("/user/register",$errors);
         }
 
         //if we are at this point of the code .. this means that everything is ok with our form information and we can register out user
@@ -114,7 +114,7 @@ class User extends DefaultController
         // we check if there is user with that username in database. If there is one we need to redirect to register form and display the error
         if ($userModel->userExist($email)) {
             $error = "User with that name already exist!";
-            $this->view->redirect("register",$error);
+            $this->view->redirect("/user/register",$error);
         }
 
         // if we are here in the code.. that means that there is no reason not to register the user .. so we do it :)
@@ -123,12 +123,12 @@ class User extends DefaultController
             if ($userModel->tryRegisterUser($email,$email,$password1)) {
                 $messageSuccess = "Registration completed successful.";
 
-                $this->view->redirect("login",$messageSuccess, "success");
+                $this->view->redirect("/user/login",$messageSuccess, "success");
             }
         }catch (\Exception $exception){
             // if there is a problem with the registration we log the message and redirect to the registration page
             $message = $exception->getMessage();
-            $this->view->redirect("register",$message);
+            $this->view->redirect("/user/register",$message);
         }
 
 
