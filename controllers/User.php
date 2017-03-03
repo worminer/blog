@@ -58,9 +58,9 @@ class User extends DefaultController
 
         try{
             if ($userModel->authenticate($email,$password)) {
-
+                $this->view->redirect("/");
             } else {
-                $this->view->redirect("login",$userModel->getErrorMessage());
+                $this->view->redirect("/",$userModel->getErrorMessage());
             }
         }catch (\Exception $exception){
             // if there is a problem with the registration we log the message and redirect to the registration page
@@ -133,5 +133,13 @@ class User extends DefaultController
 
 
 
+    }
+
+    public function logOut(){
+        // to register the user we need an instance of UserModel
+        $userModel = new \Models\UserModel();
+        $userModel->logOut();
+        // this will display the user login form
+        $this->view->render("user/login");
     }
 }

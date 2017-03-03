@@ -37,6 +37,8 @@ class DefaultController
      */
     public $input;
 
+    public $auth;
+
     /**
      * DefaultController constructor.
      */
@@ -47,6 +49,6 @@ class DefaultController
         $this->validate = \MVC\Validation::getInstance();
         $this->config   = \MVC\Config::getInstance();
         $this->input    = \MVC\InputData::getInstance();
-
+        $this->auth     = \MVC\Auth::getInstance();
     }
 }

@@ -47,9 +47,8 @@ class View {
      * @param string|null $layout
      */
     public function render(string $view, array $data = [], array $messages = [], string $layout = null){
-
-        $this->_config = Config::getInstance();
-        $this->viewConfig = $this->_config->view;
+        
+        $this->viewConfig = $this->getConfig()->view;
         $this->viewName = $view;
         $this->data = array_merge($this->data, $data);
         if ($layout == null) {
@@ -60,7 +59,7 @@ class View {
 
         // start doing the hard work
 
-        if ($this->_config->app["debugging"]) {
+        if ($this->getConfig()->app["debugging"]) {
             $startTime = microtime(true);
         }
 
@@ -76,11 +75,11 @@ class View {
 
         $this->replaceVariables();
 
-        if (isset($this->_config->app["auto_insert_site_root"]) && $this->_config->app["auto_insert_site_root"] === true) {
-            $this->insertURLPublicFolderPrefix($this->_config->app["site_root"]);
+        if (isset($this->getConfig()->app["auto_insert_site_root"]) && $this->getConfig()->app["auto_insert_site_root"] === true) {
+            $this->insertURLPublicFolderPrefix($this->getConfig()->app["site_root"]);
         }
 
-        if ($this->_config->app["debugging"]) {
+        if ($this->getConfig()->app["debugging"]) {
             echo "Template Engine -> View Preparation time : ". (microtime(true) - $startTime) ." seconds".PHP_EOL;
         }
 
@@ -98,7 +97,12 @@ class View {
         if ($messages != null) {
             $this->getMessageManager()->setMessage($type, $messages);
         }
-        header("Location: {$path}");
+        if ($this->getConfig()->app["auto_insert_site_root"]) {
+            header("Location: {$this->getConfig()->app["site_root"]}{$path}");
+        } else {
+            header("Location: {$path}");
+        }
+
         die();
     }
 
@@ -122,7 +126,12 @@ class View {
         return $this->_messageManager;
     }
 
-
+    public function getConfig(){
+        if ($this->_config == null) {
+            $this->_config = Config::getInstance();
+        }
+        return $this->_config;
+    }
 
     /**
      * @return View
@@ -196,7 +205,7 @@ class View {
      *
      */
     public function replaceGlobalVariables() {
-        foreach ($this->_config->app as $key => $value) {
+        foreach ($this->getConfig()->app as $key => $value) {
             // ignore arrays because they are not supported
             if (!is_array($value)) {
                 $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_GLOBAL_VARIABLE"]);

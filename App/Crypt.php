@@ -35,12 +35,16 @@ class Crypt
         return self::$_instance;
     }
 
+    public function getUniqeId(bool $longId = true){
+        return uniqid("",$longId);
+    }
+
     /**
      * @return string
      * it returns Salt for Hashing
      */
     public function getNewSalt(){
-        return md5(uniqid("",true));
+        return md5($this->getUniqeId());
     }
 
     /**

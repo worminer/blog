@@ -5,6 +5,7 @@
  * Class PdoMysql
  */
 namespace MVC\Database;
+
 class PdoMysql
 {
     /**

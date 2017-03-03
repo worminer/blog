@@ -142,4 +142,9 @@ class DBSession extends \MVC\Database\PdoMysql  implements SessionInterface
     public function _garbageCollector(){
         $this->prepare("DELETE FROM {$this->tableName} WHERE valind_untill<?", [time()])->execute();
     }
+
+    public function getLifeTime()
+    {
+        return $this->lifetime;
+    }
 }

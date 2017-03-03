@@ -52,7 +52,15 @@ class App {
      */
     private $_view = null;
 
-    private $applicationStartedTimert = null;
+    /**
+     * @var Auth
+     */
+    private $_auth = null;
+
+    /**
+     * @var
+     */
+    private $applicationStartedTimer = null;
 
     /**
      * App constructor.
@@ -89,7 +97,7 @@ class App {
         }
         // debuging timert
         if ($this->_config->app["debugging"]) {
-            $this->applicationStartedTimert = microtime(true);
+            $this->applicationStartedTimer = microtime(true);
         }
         //have to get an instance of the FrontController
         $this->_frontController = FrontController::getInstance();
@@ -112,8 +120,10 @@ class App {
             } else {
                 throw new \Exception("ERROR: There is no valid Session identification parameter in app config -> app['session']['type']");
             }
-
         }
+
+        // initialize authentication coontroller
+        $this->getAuth();
 
         // and we dispatch ..
         $this->_frontController->dispatcher();
@@ -124,6 +134,13 @@ class App {
             $this->_view = View::getInstance();
         }
         return $this->_view;
+    }
+
+    public function getAuth(){
+        if ($this->_auth == null) {
+            $this->_auth = Auth::getInstance();
+        }
+        return $this->_auth;
     }
 
     /**
@@ -231,7 +248,7 @@ class App {
             $this->_session->saveSession();
         }
         if ($this->_config->app["debugging"]) {
-            echo "Aplication executed for : ". (microtime(true) - $this->applicationStartedTimert) ." seconds".PHP_EOL;
+            echo "Aplication executed for : ". (microtime(true) - $this->applicationStartedTimer) ." seconds".PHP_EOL;
         }
 
     }

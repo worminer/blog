@@ -3,7 +3,6 @@
 
 namespace MVC\Session;
 
-
 /**
  * Class NativeSession
  * @package MVC\Session
@@ -11,7 +10,7 @@ namespace MVC\Session;
 class NativeSession implements SessionInterface
 {
 
-
+    private $lifeTime = null;
     /**
      * NativeSession constructor.
      * @param string $name
@@ -25,7 +24,7 @@ class NativeSession implements SessionInterface
         if (strlen($name) < 1) {
             $name = "_sess";
         }
-
+        $this->lifeTime = $lifetime;
         session_name($name);
         session_set_cookie_params($lifetime, $path, $domain, $secure, true);
         session_start();
@@ -73,5 +72,10 @@ class NativeSession implements SessionInterface
     public function __set($name, $value)
     {
         $_SESSION[$name] = $value;
+    }
+
+    public function getLifeTime()
+    {
+       return $this->lifeTime;
     }
 }
