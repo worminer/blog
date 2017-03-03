@@ -79,7 +79,7 @@ class InputData
             return $default;
         }
         if ($normalize != null) {
-            return Utill::normalize($this->hasCookie[$name],$normalize);
+            return Utill::normalize($this->_cookies[$name],$normalize);
         }
         return $this->_cookies[$name];
     }

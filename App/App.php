@@ -52,6 +52,8 @@ class App {
      */
     private $_view = null;
 
+    private $applicationStartedTimert = null;
+
     /**
      * App constructor.
      */
@@ -85,7 +87,10 @@ class App {
         if ($this->_config->getConfigFolderPath() == null) {
             $this->_config->setConfigFolder("../config");
         }
-
+        // debuging timert
+        if ($this->_config->app["debugging"]) {
+            $this->applicationStartedTimert = microtime(true);
+        }
         //have to get an instance of the FrontController
         $this->_frontController = FrontController::getInstance();
 
@@ -99,7 +104,6 @@ class App {
 
         //session settings
         $sessionConfig = $this->_config->app['session'];
-
         if ($sessionConfig["autostart"]) {
             if ($sessionConfig["type"] == "native") {
                 $this->_session  = new \MVC\Session\NativeSession($sessionConfig["name"],$sessionConfig["lifetime"],$sessionConfig["path"],$sessionConfig["domain"], $sessionConfig["secure"]);
@@ -225,6 +229,9 @@ class App {
     {
         if ($this->_session != null) {
             $this->_session->saveSession();
+        }
+        if ($this->_config->app["debugging"]) {
+            echo "Aplication executed for : ". (microtime(true) - $this->applicationStartedTimert) ." seconds".PHP_EOL;
         }
 
     }

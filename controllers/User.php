@@ -47,7 +47,7 @@ class User extends DefaultController
         // we check if there is user with that username in database. If there is one we need to redirect to register form and display the error
         if (!$userModel->userExist($email)) {
             $error = "There is no such user registered!";
-            $this->view->redirect("register",$error);
+            $this->view->redirect("login",$error);
         }
 
 
@@ -58,9 +58,9 @@ class User extends DefaultController
 
         try{
             if ($userModel->authenticate($email,$password)) {
-                $messageSuccess = "Registration completed successful.";
 
-                $this->view->redirect("login",$messageSuccess, "success");
+            } else {
+                $this->view->redirect("login",$userModel->getErrorMessage());
             }
         }catch (\Exception $exception){
             // if there is a problem with the registration we log the message and redirect to the registration page

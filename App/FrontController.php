@@ -47,6 +47,7 @@ class FrontController
     }
 
     public function dispatcher(){
+
         $routerSettings = $this->getRouterSettings();
 
         $routerToLoad =$routerSettings['namespace']."\\".$routerSettings['name'];
@@ -58,14 +59,17 @@ class FrontController
         // setting up controller
 
         $controller = ucfirst($router->getController());
+
         if ($controller == null) {
             $controller = ucfirst($this->getDefaultController());
         }
+
         // setting up action(method)
         $action     = ucfirst($router->getAction());
         if ($action == null) {
             $action = ucfirst($this->getDefaultAction());
         }
+
         // putting get and post in input data manager
         $inputData = \MVC\InputData::getInstance();
         $inputData->setGet($router->getGetParams());

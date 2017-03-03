@@ -47,6 +47,7 @@ class View {
      * @param string|null $layout
      */
     public function render(string $view, array $data = [], array $messages = [], string $layout = null){
+
         $this->_config = Config::getInstance();
         $this->viewConfig = $this->_config->view;
         $this->viewName = $view;
@@ -57,19 +58,34 @@ class View {
             $this->layoutName = $layout;
         }
 
+        // start doing the hard work
+
+        if ($this->_config->app["debugging"]) {
+            $startTime = microtime(true);
+        }
+
         $this->loadLayout();
+
         $this->insertBodyView();
+
         $this->insertAllPartials();
+
         $this->insertMessages();
+
         $this->replaceGlobalVariables();
+
         $this->replaceVariables();
 
         if (isset($this->_config->app["auto_insert_site_root"]) && $this->_config->app["auto_insert_site_root"] === true) {
             $this->insertURLPublicFolderPrefix($this->_config->app["site_root"]);
         }
 
+        if ($this->_config->app["debugging"]) {
+            echo "Template Engine -> View Preparation time : ". (microtime(true) - $startTime) ." seconds".PHP_EOL;
+        }
 
         die($this->getHtml()) ;
+
 
     }
 
@@ -157,10 +173,13 @@ class View {
      * @param $publicFolder
      */
     public function insertURLPublicFolderPrefix($publicFolder){
-        $patern = '(?<=(?:href=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|))*)(?=\'|")';
-        //preg_match_all("/{$patern}/", $this->getHtml(),$matches);
-        //var_dump($matches);
-        $this->setHtml(preg_replace("/{$patern}/i", "{$publicFolder}$1", $this->getHtml()));
+        // matches src="" or src=''
+        $patern[] = '/(?<=(?:src=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
+        // matches href="" or hreg=''
+        $patern[] = '/(?<=(?:href=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
+//        preg_match_all($patern[0], $this->getHtml(),$matches);
+//        var_dump($matches);
+        $this->setHtml(preg_replace($patern, "{$publicFolder}$1", $this->getHtml()));
     }
 
     /**
