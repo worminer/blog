@@ -3,38 +3,84 @@
     <div class="well">
         <h1>in this page you can see example usage of templates</h1>
 
+        <div>
+            <h2>example of "each block" template logic</h2>
+            if an array is given with name "links" it will foreach and return the block count(array) number of times;<br>
+            if this is associative array you can use {{key}} as array key and {{value}} as array value;<br>
+            if this is indexed array you can use {{value}} and the {{key}} parameter will be the assigned index inside the array ;<br>
+            if else parameter is given .. his content will be shown only when the list is empty;<br>
+            if list is empty and there is no else param it will display empty string;<br>
+            <br>
+            example: associative gets array linksKeyValues
+            <br>
+            {{#each linksKeyValues}}
+                <span>element #{{#number}} has index of {{#index}} in the array:</span><a href="{{value}}" > {{key}} </a><br>
+            {{else}}
+                <b>There are no links</b>
+            {{/each}}
+            <br>
+            example: indexed gets array linksValues
+            <br>
+            {{#each linksValues}}
+            <span>element #{{#number}} has index of {{#index}} in the array:</span><a href="{{value}}" > {{key}} </a><br>
+            {{else}}
+                <b>There are no links</b>
+            {{/each}}
+        </div>
+        <hr>
+
+        <div>
+            <h2>example of unless template logic</h2>
+            if variable with name "second" is given then it will check if its true or false <br>
+            if it is false then will display the block <br>
+            if it is true it will display an empty string <br>
+            <br>
+            example:
+            <br>
+            {{#unless unlessVariable}}
+                unless the bool is true .. show this message!
+            {{/unless}}
+        </div>
+        <hr>
         <h2>example of if template logic</h2>
         <div>
-            if variable with name is given then it will check if its true or false
-            and if it is true then will display the block and if it is false it will
-            display an empty string
+            if variable with name "first" is given then it will check if its true or false<br>
+            if it is true then will display the block<br>
+            if it is false it will display an empty string<br>
             <br>
+            example:
             <br>
-            {{#if first}}
-            if true do this else do nothing
+            {{#if ifVariable}}
+                if true do this!
             {{/if}}
         </div>
         <hr>
-        <hr>
         <div>
             <h2>example of if else template logic</h2>
-            if variable with name is given then it will check if its true or false
-            and if it is true then will display the block from if to else
-            and if it is false will display the else to /if
+            if variable with name "first" is given then it will check if its true or false <br>
+            if it is true then will display the block from if to else<br>
+            if it is false will display the else to end of the if<br>
             <br>
+            example:
             <br>
-            {{#if first}}
-                if true do this
+            {{#if ifVariable}}
+                if true do this!
             {{else}}
-                else do this
+                else do this!
             {{/if}}
         </div>
         <hr>
         <div >
             <h2>how to display variables send from controller</h2>
-            {#stringVariable}   - will display the variable, if it is a string, int or float it will be displayed as string<br>
-            {#boolVariable}     - will display the variable, if the variable is type bool then will be converted to string true/false<br>
-            {#arrayVariable}    - will display the variable, if it is an array it will be inploded to string<br>
+            - if it is a string, int or float it will be displayed as string<br>
+            - if the variable is type bool then will be converted to string true/false<br>
+            - if it is an array it will be inplode() to string<br>
+            <br>
+            examples:
+            <br>
+            This is a string    => {#stringVariable}<br>
+            This is a bool      => {#boolVariable}<br>
+            This is an array    => {#arrayVariable}<br>
         </div>
         <hr>
     </div>

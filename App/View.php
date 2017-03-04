@@ -182,27 +182,115 @@ class View {
      *  will check for helpers and execute them
      */
     public function executeHelperBlocks(){
-        $findIfElseBlock = '/' . $this->viewConfig["IF_BLOCK_START"] . '(?:.*?)' . $this->viewConfig["IF_BLOCK_END"] . '/si'; // matches everything between {{#if author}} and {{/if}}
+        $viewConfig =  $this->viewConfig;
+        $findIfElseBlock = '/' . $viewConfig["IF_BLOCK_START"] . '(?:.*?)' . $viewConfig["IF_BLOCK_END"] . '/si'; // matches everything between {{#if author}} and {{/if}}
+        $findUnlessBlock = '/'. $viewConfig["UNLESS_BLOCK_START"] . '(?:.*?)' . $viewConfig["UNLESS_BLOCK_END"] .'/si'; // matches Unless block
+        $findEachBlock   = '/'. $viewConfig["EACH_BLOCK_START"] . '(?:.*?)' . $viewConfig["EACH_BLOCK_END"] .'/si'; // matches Each block
+
         $this->setHtml(preg_replace_callback_array(
             [
-                $findIfElseBlock => function ($match) {return $this->preformIfBlock($match[0]);}
+                $findIfElseBlock    => function ($match) {return $this->preformIfBlock($match[0]);},
+                $findUnlessBlock    => function ($match) {return $this->preformUnlessBlock($match[0]);},
+                $findEachBlock      => function ($match) {return $this->preformEachBlock($match[0]);},
             ]
             ,$this->getHtml(),-1,$expressionCounter));
+    }
 
+    public function preformEachBlock(string $block){
+        $viewConfig =  $this->viewConfig;
+        preg_match('/' . $viewConfig["EACH_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
+        $varName = $matchesIF[2];  // get the variable name
 
+        $arrayVariable = null;
+        // check if variable is set and if it is not we return the original input
+        if (isset($this->data[$varName])) {
+            $arrayVariable = $this->data[$varName];
+        } else {
+            return $block;
+        }
 
+        // if this is not an array return the block back
+        if (!is_array($arrayVariable)) {
+            return $block;
+        }
+
+        // check if there is and else block
+        preg_match('/' . $viewConfig["EACH_BLOCK_ELSE"] . '/i',$block,$matchesElse); // find if there is else in the if block
+
+        if (count($matchesElse) > 0) {
+            preg_match('/' . $viewConfig["EACH_BLOCK_START"] . '(.*)' . $viewConfig["EACH_BLOCK_ELSE"] . '(.*)' . $viewConfig["EACH_BLOCK_END"] . '/si',$block,$matchesParts);
+            // check if the if statement is true or false and return the proper awnser
+            //var_dump($matchesParts);
+            if (count($arrayVariable) > 0) {
+                $matchedString = $matchesParts[3];
+            } else {
+                $matchedString = $matchesParts[5];
+            }
+
+        } else {
+            preg_match('/' . $viewConfig["EACH_BLOCK_START"] . '(.*)' . $viewConfig["EACH_BLOCK_END"] . '/si',$block,$matchesParts);
+            // check if the if statement is true or false and return the proper awnser
+            if (count($arrayVariable) > 0) {
+                $matchedString = $matchesParts[3];
+            } else {
+                $matchedString = '';
+            }
+        }
+        $result = "";
+        $paterns = [
+            '/'.$viewConfig["EACH_BLOCK_KEY_PARAM"].'/i',
+            '/'.$viewConfig["EACH_BLOCK_VALUE_PARAM"].'/i',
+            '/'.$viewConfig["EACH_BLOCK_INDEX_PARAM"].'/i',
+            '/'.$viewConfig["EACH_BLOCK_NUMBER_PARAM"].'/i',
+        ] ;
+        $counter = 0;
+        // parse the string and put the variables inside
+        foreach ($arrayVariable as $key => $value){
+            $values = [
+                $key,
+                $value,
+                $counter,
+                $counter+1,
+
+            ] ;
+            $result .= preg_replace($paterns, $values, $matchedString);
+            $counter++;
+        }
+        return $result ;
 
 
     }
 
-    public function preformIfBlock(string $block):string {
-        //var_dump($block);
-        preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
+    public function preformUnlessBlock(string $block){
+
+        preg_match('/' . $this->viewConfig["UNLESS_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
         $varName = $matchesIF[2];  // get the variable name
-        $var = null;
+
+        $boolVariable = null;
         // check if variable is set and if it is not we return the original input
         if (isset($this->data[$varName])) {
-            $var = $this->data[$varName];
+            $boolVariable = $this->data[$varName];
+        } else {
+            return $block;
+        }
+
+        preg_match('/' . $this->viewConfig["UNLESS_BLOCK_START"] . '(.*)' . $this->viewConfig["UNLESS_BLOCK_END"] . '/si',$block,$matchesParts);
+        // check if the if statement is true or false and return the proper awnser
+        if ($boolVariable === false) {
+            return $matchesParts[3];
+        } else {
+            return '';
+        }
+    }
+
+    public function preformIfBlock(string $block):string {
+
+        preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
+        $varName = $matchesIF[2];  // get the variable name
+        $boolVariable = null;
+        // check if variable is set and if it is not we return the original input
+        if (isset($this->data[$varName])) {
+            $boolVariable = $this->data[$varName];
         } else {
             return $block;
         }
@@ -213,7 +301,7 @@ class View {
         if (count($matchesElse) > 0) {
             preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_ELSE"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
-            if ($var) {
+            if ($boolVariable === true) {
                 return $matchesParts[3];
             } else {
                 return $matchesParts[5];
@@ -221,7 +309,7 @@ class View {
         } else {
             preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
-            if ($var) {
+            if ($boolVariable === true) {
                 return $matchesParts[3];
             } else {
                 return '';
