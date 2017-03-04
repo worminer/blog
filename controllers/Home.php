@@ -15,6 +15,6 @@ class Home extends DefaultController
         }
 
         // this is the default index so this will display the homepage
-        $this->view->render("home/index");
+        $this->view->render("home/index",["logged" => true]);
     }
 }

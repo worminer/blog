@@ -22,9 +22,9 @@ $viewConfig["TEMPLATE_GLOBAL_VARIABLE"] = "{@%VAR_NAME%}";
 // %VAR_NAME% will be replaced with variable name, so if you edit it you have to put %VAR_NAME%..
 $viewConfig["TEMPLATE_PARTIAL"] = "{>%PARTIAL_NAME%}";
 
-//$viewConfig[""] = "";
-//$viewConfig[""] = "";
-//$viewConfig[""] = "";
+$viewConfig["IF_BLOCK_START"]   = '(?:{{ *)(#if)(?: *)(\w+)(?: *}})';  // matches "if" and  "author" from {{# if author }} {{#if author}}
+$viewConfig["IF_BLOCK_END"]     = '(?:{{ *)(\/if)(?: *}})';             // matches "/if" from {{/if}} or {{ /if }}
+$viewConfig["IF_BLOCK_ELSE"]    = '(?:{{ *)(else)(?: *}})';             // matches  "else" from {{ else }} or {{else}}
 //$viewConfig[""] = "";
 //$viewConfig[""] = "";
 

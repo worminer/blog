@@ -75,6 +75,8 @@ class View {
 
         $this->replaceVariables();
 
+        $this->executeHelperBlocks();
+
         if (isset($this->getConfig()->app["auto_insert_site_root"]) && $this->getConfig()->app["auto_insert_site_root"] === true) {
             $this->insertURLPublicFolderPrefix($this->getConfig()->app["site_root"]);
         }
@@ -177,6 +179,56 @@ class View {
     }
 
     /**
+     *  will check for helpers and execute them
+     */
+    public function executeHelperBlocks(){
+        $findIfElseBlock = '/' . $this->viewConfig["IF_BLOCK_START"] . '(?:.*?)' . $this->viewConfig["IF_BLOCK_END"] . '/si'; // matches everything between {{#if author}} and {{/if}}
+        $this->setHtml(preg_replace_callback_array(
+            [
+                $findIfElseBlock => function ($match) {return $this->preformIfBlock($match[0]);}
+            ]
+            ,$this->getHtml(),-1,$expressionCounter));
+
+
+
+
+
+    }
+
+    public function preformIfBlock(string $block):string {
+        //var_dump($block);
+        preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
+        $varName = $matchesIF[2];  // get the variable name
+        $var = null;
+        // check if variable is set and if it is not we return the original input
+        if (isset($this->data[$varName])) {
+            $var = $this->data[$varName];
+        } else {
+            return $block;
+        }
+
+        // check if there is and else block
+        preg_match('/' . $this->viewConfig["IF_BLOCK_ELSE"] . '/i',$block,$matchesElse); // find if there is else in the if block
+
+        if (count($matchesElse) > 0) {
+            preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_ELSE"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
+            // check if the if statement is true or false and return the proper awnser
+            if ($var) {
+                return $matchesParts[3];
+            } else {
+                return $matchesParts[5];
+            }
+        } else {
+            preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
+            // check if the if statement is true or false and return the proper awnser
+            if ($var) {
+                return $matchesParts[3];
+            } else {
+                return '';
+            }
+        }
+    }
+    /**
      * inserts path to public dir in all local links
      * href="home/index" becomes href="/Path/To/Public/home/index"
      * @param $publicFolder
@@ -196,8 +248,21 @@ class View {
      */
     public function replaceVariables() {
         foreach ($this->data as $key => $value) {
-            $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
-            $this->setHtml(preg_replace("/$replaceTag/i", $value, $this->getHtml()));
+            if (is_array($value)) {
+                $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
+                $this->setHtml(preg_replace("/$replaceTag/i", implode(" ", $value), $this->getHtml()));
+            } else if (is_bool($value)) {
+                if ($value) {
+                    $value = "true";
+                } else {
+                    $value = "false";
+                }
+                $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
+                $this->setHtml(preg_replace("/$replaceTag/i", $value  , $this->getHtml()));
+            } else {
+                $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
+                $this->setHtml(preg_replace("/$replaceTag/i", $value, $this->getHtml()));
+            }
         }
     }
 
