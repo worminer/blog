@@ -11,3 +11,23 @@ body {
 footer {
     margin: 50px 0;
 }
+/** Contact/show **/
+.avatar_pic
+{
+    height:90px;
+    width:30%;
+    float:left;
+}
+.biz_cart
+{
+    height:100px;
+    width:67%;
+    margin-left:3%;
+    float:left;
+}
+.btn_cart
+{
+    float:right;
+    margine-top:25px;
+}
+/** End of Contact/show **/
