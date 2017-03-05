@@ -96,6 +96,7 @@ class View {
      * @param string $type
      */
     public function redirect(string $path,$messages = null, $type = "error") {
+        // TODO: да се направи проверка дали съобщението е от позволените типове..
         if ($messages != null) {
             $this->getMessageManager()->setMessage($type, $messages);
         }
