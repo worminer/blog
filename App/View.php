@@ -194,7 +194,8 @@ class View {
                 $findUnlessBlock    => function ($match) {return $this->preformUnlessBlock($match[0]);},
                 $findEachBlock      => function ($match) {return $this->preformEachBlock($match[0]);},
             ]
-            ,$this->getHtml(),-1,$expressionCounter));
+            ,$this->getHtml(),-1,$expressionCounter)
+        );
     }
 
     public function preformEachBlock(string $block){
@@ -238,23 +239,69 @@ class View {
             }
         }
         $result = "";
-        $paterns = [
-            '/'.$viewConfig["EACH_BLOCK_KEY_PARAM"].'/i',
-            '/'.$viewConfig["EACH_BLOCK_VALUE_PARAM"].'/i',
-            '/'.$viewConfig["EACH_BLOCK_INDEX_PARAM"].'/i',
-            '/'.$viewConfig["EACH_BLOCK_NUMBER_PARAM"].'/i',
-        ] ;
+
         $counter = 0;
         // parse the string and put the variables inside
         foreach ($arrayVariable as $key => $value){
+
+            if (is_array($value)) {
+                $valueString = Utill::implodeRecursive(" ",$value);
+                $valueArr = $value;
+            } else {
+                $valueString = $value;
+                $valueArr = [];
+            }
+
             $values = [
-                $key,
-                $value,
-                $counter,
-                $counter+1,
+                'key'         => $key,
+                'valueString' => $valueString,
+                'valueArr'    => $valueArr,
+                'index'       => $counter,
+                'number'      => $counter+1,
 
             ] ;
-            $result .= preg_replace($paterns, $values, $matchedString);
+
+            $patterns = [
+                '/'.$viewConfig["EACH_BLOCK_KEY_PARAM"].'/si'          => function ($match) use (&$values){return $values["key"];},
+                '/'.$viewConfig["EACH_BLOCK_VALUE_PARAM"].'/si'        => function ($match) use (&$values){return $values["valueString"];},
+                '/'.$viewConfig["EACH_BLOCK_VALUE_PARAM_INDEXED"].'/si'=> function ($match) use (&$values){
+
+                    $currentValues = $values["valueArr"];
+                    if (!is_array($currentValues)) {
+                        return "/no an array/";
+                    }
+
+                    if (count($currentValues) <= 0) {
+                        return "/empty array/";
+                    }
+
+                    if (!isset($currentValues[$match[1]])) {
+                        return "/no such key in array/";
+                    }
+                    return $currentValues[$match[1]];
+                },
+                '/'.$viewConfig["EACH_BLOCK_VALUE_PARAM_ASSOC"].'/si'  => function ($match) use (&$values){
+                    $currentValues = $values["valueArr"];
+                    if (!is_array($currentValues)) {
+                        return "/no an array/";
+                    }
+
+                    if (count($currentValues) <= 0) {
+                        return "/empty array/";
+                    }
+
+                    if (!isset($currentValues[$match[1]])) {
+                        return "/no such key in array/";
+                    }
+                    return $currentValues[$match[1]];
+                },
+                '/'.$viewConfig["EACH_BLOCK_INDEX_PARAM"].'/si'        => function ($match) use (&$values){return $values["index"];},
+                '/'.$viewConfig["EACH_BLOCK_NUMBER_PARAM"].'/si'       => function ($match) use (&$values){return $values["number"];},
+
+            ] ;
+
+            $result .= preg_replace_callback_array ( $patterns, $matchedString, -1, $expressionCounter);
+            //$result .= preg_replace($patterns, $values, $matchedString);
             $counter++;
         }
         return $result ;
@@ -338,8 +385,9 @@ class View {
     public function replaceVariables() {
         foreach ($this->data as $key => $value) {
             if (is_array($value)) {
-                $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
-                $this->setHtml(preg_replace("/$replaceTag/i", implode(" ", $value), $this->getHtml()));
+                //TODO: fix it .. to work wih arrays in arrays..
+//                $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
+//                $this->setHtml(preg_replace("/$replaceTag/i", implode(" ", $value), $this->getHtml()));
             } else if (is_bool($value)) {
                 if ($value) {
                     $value = "true";

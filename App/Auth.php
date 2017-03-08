@@ -59,7 +59,7 @@ class Auth extends PdoMysql
         // we don't use SELECT * because we dont need all the info..
         // instead we get only the id..
         //  and that makes the query way faster then if we use SELECT *
-        $result = $this ->prepare("SELECT id FROM users WHERE username=?",[$username]) // make a prepared statement
+        $result = $this->prepare("SELECT id FROM users WHERE username=?",[$username]) // make a prepared statement
         ->execute(); // and after that this needs to be executed so you can receive the result if there is any
         // after that we need to get the results from the PDO return so we do fetchRllAssoc() ..
         // this will return the fist result or false if there are no results

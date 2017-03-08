@@ -29,7 +29,6 @@ class Utill
                     //TODO: XSS LOGIC
 
                 }
-
             }
         }
         return $data;
@@ -55,6 +54,22 @@ class Utill
             $result = substr($result, strlen($needle));
         }
         return $result;
+    }
+
+    public static function implodeRecursive($glue, $array) {
+        $ret = '';
+
+        foreach ($array as $item) {
+            if (is_array($item)) {
+                $ret .= implodeRecursive($item, $glue) . $glue;
+            } else {
+                $ret .= $item . $glue;
+            }
+        }
+
+        $ret = substr($ret, 0, 0-strlen($glue));
+
+        return $ret;
     }
 
 }

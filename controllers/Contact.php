@@ -14,6 +14,7 @@ class Contact extends DefaultController
 //    }
     public function show()
     {
+
         $this->view->render("contact/show");
     }
 
