@@ -8,26 +8,41 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Home</a>
-        </div>
-        <!-- Collect the nav links, forms, and other content for toggling -->
+             <a class="nav navbar-brand" href="#"><img style="max-width: 70px"  src="/resources/images/logo.jpg"></a>
+            <!-- <a class="navbar-brand" href="#" title="blog">
+                 <img style="width:50px; "
+                      src="/resources/images/logo.jpg">-->
+         </div>
+         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
+                <li>
+                    <a href="#">Home</a>
+                </li>
                 <li>
                     <a href="#">About</a>
                 </li>
                 <li>
-                    <a href="#">Services</a>
+                    <a href="/contact/show">Contact</a>
                 </li>
                 <li>
-                    <a href="/Contact/show">Contact</a>
+                    <a href="/article/create">Create new Post</a> <!-- Show only when logged in as Editor -->
                 </li>
                 <li>
-                    <a href="/user/login">Login</a>
+                    <a href="">Admin Panel</a> <!-- Show only when logged in as Admin -->
                 </li>
-                <li>
-                    <a href="/article/create">Create new Post</a>
-                </li>
+
+            </ul>
+            <ul class="nav navbar-nav pull-right">
+                <li> <a href="/user/login">
+                        <span class="glyphicon glyphicon-log-in"> </span>
+                        Login</a></li>
+                <li> <a href="/user/login">
+                        <span class="glyphicon glyphicon-user"> </span>
+                        Register</a></li>
+                <li> <a href="/user/logout">
+                        <span class="glyphicon glyphicon-log-out"> </span> <!-- Show only when logged in-->
+                        Logout</a></li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
