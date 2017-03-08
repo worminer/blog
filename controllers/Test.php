@@ -14,18 +14,49 @@ class Test extends DefaultController
             echo "user is logged in";
         }
         $arr = [
-            "ifVariable"  => true,
+            "ifVariable"  => false,
             "unlessVariable" => false,
             "third"  => true,
             "stringVariable"    => "test string/int/float",
             "boolVariable"      => true,
             "arrayVariable"     => ["parts","of","array"],
             "emptyArray"     => [],
-            "linksKeyValues"     => ["home" => "/",
-                                    "about" => "/home/about",
-                                    "login" => "/user/login",
-                                    "test" => "/test/test"],
-            "linksValues"        => ["/","/home/about","/user/login","/test/test",],
+            "linksKeyValues"     => [
+                "home" => "/",
+                "about" => "/home/about",
+                "login" => "/user/login",
+                "test" => "/test/test"
+            ],
+            "linksValues"        => [
+                "/",
+                "/home/about",
+                "/user/login",
+                "/test/test",
+            ],
+            "dbresults"     => [
+                [
+                    "name" => "Pesho Petrov",
+                    "apples" => 325,
+                    "city" => "Sofia",
+                ],
+                [
+                    "name" => "Ivan Ivanov",
+                    "apples" => 325,
+                    "city" => "Plovdiv",
+                ]
+            ],
+            "dbResultsIndexed"        => [
+                [
+                    "Pesho Petrov",
+                    325,
+                    "Sofia"
+                ],
+                [
+                    "Ivan Ivanov",
+                    25,
+                    "Plovdiv",
+                ]
+            ]
         ];
 
 

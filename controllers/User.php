@@ -19,7 +19,7 @@ class User extends DefaultController
 
         // checking for login parameter in post request ..
         // if there is no such param that means that the wrong form was send or someone access the /user /registerPost url!
-        // that means, we haveto redirect the user to the register form
+        // that means, we have to redirect the user to the register form
         if ($input->post("login") == null) {
             $this->view->redirect("/user/register");
         }
@@ -85,7 +85,6 @@ class User extends DefaultController
         // if there is no such param that means that the wrong form was send or someone access the /user /registerPost url!
         // that means, we haveto redirect the user to the register form
         if ($input->post("register") == null) {
-
             $this->view->redirect("/user/register");
         }
 
@@ -99,8 +98,8 @@ class User extends DefaultController
         $this->validate->setRule('matches', $password1 ,$password2, "Passwords are not the same!");
         // check if password is more then 6 symbols
         $this->validate->setRule('minlength', $password1 , 6 , "Password must be more then 6 symbols!");
-
         // validate all filters and if there is an error .. we have to redirect and display the errors
+
         if ($this->validate->validate() === false) {
             $errors = $this->validate->getErrors();
             $this->view->redirect("/user/register",$errors);
@@ -119,6 +118,7 @@ class User extends DefaultController
 
         // if we are here in the code.. that means that there is no reason not to register the user .. so we do it :)
         // if everything is ok with the registration we redirect the user to the login page
+
         try{
             if ($userModel->tryRegisterUser($email,$email,$password1)) {
                 $messageSuccess = "Registration completed successful.";
@@ -130,9 +130,6 @@ class User extends DefaultController
             $message = $exception->getMessage();
             $this->view->redirect("/user/register",$message);
         }
-
-
-
     }
 
     public function logOut(){

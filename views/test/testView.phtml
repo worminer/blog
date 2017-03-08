@@ -11,6 +11,14 @@
             if else parameter is given .. his content will be shown only when the list is empty;<br>
             if list is empty and there is no else param it will display empty string;<br>
             <br>
+            example: indexed gets array linksValues
+            <br>
+            {{#each linksValues}}
+            <span>element #{{#number}} has index of {{#index}} in the array:</span><a href="{{value}}" > {{key}} </a><br>
+            {{else}}
+            <b>There are no links</b>
+            {{/each}}
+            <br>
             example: associative gets array linksKeyValues
             <br>
             {{#each linksKeyValues}}
@@ -19,13 +27,25 @@
                 <b>There are no links</b>
             {{/each}}
             <br>
-            example: indexed gets array linksValues
+            example: associative gets array dbResults witch has an array as value
             <br>
-            {{#each linksValues}}
-            <span>element #{{#number}} has index of {{#index}} in the array:</span><a href="{{value}}" > {{key}} </a><br>
+
+            {{#each dbresults}}
+            <span> result id {{key}} have a values: name = {{value["name"]}}, apples = {{ value["apples"] }} and life city = "{{value["city"]}}"</span><br>
             {{else}}
-                <b>There are no links</b>
+                <b>There are no results</b>
             {{/each}}
+            <br>
+            <br>
+            example: indexed gets array dbResultsIndexed witch has an array as value
+            <br>
+            {{#each dbResultsIndexed}}
+                <span> result id {{key}} have a values: name = {{value[0]}}, apples =  {{ value[1] }} and lives in city = "{{value[2]}}"</span><br>
+            {{else}}
+                <b>There are no results</b>
+            {{/each}}
+            <br>
+
         </div>
         <hr>
 

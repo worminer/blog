@@ -49,4 +49,5 @@ $config["session"] = [
 ];
 //error handeling TODO:FIX IT
 $config["displayExceptions"] = true;
+
 return $config;
