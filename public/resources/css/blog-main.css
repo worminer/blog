@@ -30,4 +30,14 @@ footer {
     float:right;
     margine-top:25px;
 }
+.carousel-inner > .item > img,
+.carousel-inner > .item > a > img {
+    width: 70%;
+    margin: auto;
+    height: 460px;
+}
+.asd {
+    float: right;
+}
+
 /** End of Contact/show **/
