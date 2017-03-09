@@ -1,24 +1,22 @@
-<!-- Blog Show  -->
-<div class="col-md-4 col-md-offset-4">
+<!-- Blog Login Form  -->
+<div class="col-md-8 col-md-offset-2">
     <div class="login-panel panel panel-success">
         <div class="panel-heading">
-            <h3 class="panel-title">View Post </h3>
+            <h3 class="panel-title">All Post</h3>
         </div>
         <div class="panel-body panel-success">
-            {{#each results}}
-            <div class="panel-body panel-collapse">
+
+            {{#each result}}
+            <div class="panel-body panel-success">
                 <blockquote>{{value["username"]}}</blockquote>
-            <li>{{value["title"]}}</li>
-            <li>{{value["content"]}}</li>
+                <li>{{value["title"]}}</li>
+                <li>{{value["content"]}}</li>
             <a href="/article/edit/{{value["article_id"]}}" class="btn btn-primary btn-sm">Edit</a>
             <a href="/article/delete/{{value["article_id"]}}" class="btn btn-primary btn-sm">Delete</a>
-
-            </div>
+            <div>
             {{/each}}
 
         </div>
-
-        </div>
-
-
-<!-- End of  Blog Show  -->
+    </div>
+</div>
+<!-- End of  Blog Login Form  -->
