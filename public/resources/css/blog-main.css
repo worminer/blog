@@ -36,8 +36,9 @@ footer {
     margin: auto;
     height: 460px;
 }
-.asd {
-    float: right;
+.category-img  {
+    width: 60px;
+    margin: 0 auto;
 }
 
 /** End of Contact/show **/
