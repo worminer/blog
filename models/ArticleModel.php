@@ -68,7 +68,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
 
     public function showAllPost():array
     {
-        $result = $this->prepare("Select article_id,author_id,title,content,username FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id");
+        $result = $this->prepare("SELECT article_id,author_id,title,content,username FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id");
         $result->execute();
         if  (!$result->getAffectedRows()){
             $this->setErrorMessage("Error: The request is not fulfilled!");
@@ -78,7 +78,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
     }
 
     public function getArticleByAuthorId($author_id):array {
-        $result=$this->prepare("Select article_id,author_id,title,content,username FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id WHERE `author_id`=?",[$author_id]);
+        $result=$this->prepare("SELECT article_id,author_id,title,content,username FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id WHERE `author_id`=?",[$author_id]);
         $result->execute();
         return $result->fetchAllAssoc();
     }
