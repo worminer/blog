@@ -40,6 +40,7 @@ class View {
      */
     private $viewConfig = null;
 
+    private $_globals = null;
     /**
      * @param string $view
      * @param array  $data
@@ -62,6 +63,8 @@ class View {
         if ($this->getConfig()->app["debugging"]) {
             $startTime = microtime(true);
         }
+
+        $this->_globals = GlobalVariables::getInstance();
 
         $this->loadLayout();
 
@@ -319,12 +322,12 @@ class View {
         if (isset($this->data[$varName])) {
             $boolVariable = $this->data[$varName];
         } else {
-            return $block;
+            return "";
         }
 
         preg_match('/' . $this->viewConfig["UNLESS_BLOCK_START"] . '(.*)' . $this->viewConfig["UNLESS_BLOCK_END"] . '/si',$block,$matchesParts);
         // check if the if statement is true or false and return the proper awnser
-        if ($boolVariable === false) {
+        if ((bool)$boolVariable === false) {
             return $matchesParts[3];
         } else {
             return '';
@@ -340,7 +343,7 @@ class View {
         if (isset($this->data[$varName])) {
             $boolVariable = $this->data[$varName];
         } else {
-            return $block;
+            return '';
         }
 
         // check if there is and else block
@@ -349,7 +352,7 @@ class View {
         if (count($matchesElse) > 0) {
             preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_ELSE"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
-            if ($boolVariable === true) {
+            if ((bool)$boolVariable === true) {
                 return $matchesParts[3];
             } else {
                 return $matchesParts[5];
@@ -357,7 +360,7 @@ class View {
         } else {
             preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
-            if ($boolVariable === true) {
+            if ((bool)$boolVariable === true) {
                 return $matchesParts[3];
             } else {
                 return '';
@@ -371,12 +374,10 @@ class View {
      */
     public function insertURLPublicFolderPrefix($publicFolder){
         // matches src="" or src=''
-        $patern[] = '/(?<=(?:src=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
-        // matches href="" or hreg=''
-        $patern[] = '/(?<=(?:href=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
-//        preg_match_all($patern[0], $this->getHtml(),$matches);
-//        var_dump($matches);
-        $this->setHtml(preg_replace($patern, "{$publicFolder}$1", $this->getHtml()));
+        $patrerns[] = '/(?<=(?:src=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
+        $patrerns[] = '/(?<=(?:href=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
+        //TODO:match actions
+        $this->setHtml(preg_replace($patrerns, "{$publicFolder}$1", $this->getHtml()));
     }
 
     /**
@@ -407,7 +408,9 @@ class View {
      *
      */
     public function replaceGlobalVariables() {
-        foreach ($this->getConfig()->app as $key => $value) {
+        $globalVariables = GlobalVariables::getInstance();
+
+        foreach ($globalVariables->getAllGlobalVar() as $key => $value) {
             // ignore arrays because they are not supported
             if (!is_array($value)) {
                 $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_GLOBAL_VARIABLE"]);

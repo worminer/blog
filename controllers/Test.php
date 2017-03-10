@@ -17,6 +17,7 @@ class Test extends DefaultController
             "ifVariable"  => false,
             "unlessVariable" => false,
             "third"  => true,
+            "sub_title"     => "test Subtitle",
             "stringVariable"    => "test string/int/float",
             "boolVariable"      => true,
             "arrayVariable"     => ["parts","of","array"],

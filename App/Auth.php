@@ -22,6 +22,8 @@ class Auth extends PdoMysql
 
     private $currentUserID = null;
 
+    private $userRoles = [];
+
 
     /**
      * @var Crypt
@@ -36,6 +38,11 @@ class Auth extends PdoMysql
     public function __construct()    {
         parent::__construct();
         $this->isValidSessionToken();
+        $global = GlobalVariables::getInstance();
+
+        $global->setGlobalVar("isLogged",$this->isLogged());
+        $global->setGlobalVar("isUser",$this->isInRole('user'));
+        $global->setGlobalVar("isAdmin",$this->isInRole('admin'));
     }
 
 
@@ -134,7 +141,9 @@ class Auth extends PdoMysql
         if ($this->getSession()->AuthToken === null) {
             return false;
         }
-
+        if ($this->currentUserID !== null) {
+            return true;
+        }
         $sessionToken = $this->getSession()->AuthToken;
         $result = $this ->prepare("SELECT id,session_token_expire FROM users WHERE session_token=?",[$sessionToken])->execute();
         //if there is no such token in the user table .. session is not valid.. so return false
@@ -180,6 +189,7 @@ class Auth extends PdoMysql
         }
         return $this->currentUserID;
     }
+
     public function isLogged():bool{
         if ($this->getCurrentUserId() == null) {
             return false;
@@ -187,8 +197,21 @@ class Auth extends PdoMysql
         return true;
     }
     
-    public function getRole(){
-        //TODO:implement get role
+    public function getRoles(){
+        if (count($this->userRoles) == 0) {
+            $result = $this->prepare('Select role_name FROM user_roles AS ur Join roles AS r ON ur.role_id=r.id WHERE ur.user_id=?', [$this->getCurrentUserId()])->execute();
+            $result = $result->fetchAllAssoc();
+            if (count($result) > 0) {
+                foreach ($result as $resultArr){
+                    $this->userRoles[] =$resultArr["role_name"] ;
+                }
+            }
+        }
+        return $this->userRoles;
+    }
+
+    public function isInRole(string $role){
+        return in_array($role,$this->getRoles());
     }
 
     public function logOut(){

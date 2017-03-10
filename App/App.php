@@ -58,6 +58,11 @@ class App {
     private $_auth = null;
 
     /**
+     * @var GlobalVariables $_globals
+     */
+    private $_globals = null;
+
+    /**
      * @var
      */
     private $applicationStartedTimer = null;
@@ -99,6 +104,13 @@ class App {
         if ($this->_config->app["debugging"]) {
             $this->applicationStartedTimer = microtime(true);
         }
+
+        //setting global variables
+        $global = $this->getGlobals();
+        if (isset($this->_config->app['site_title'])) {
+            $global->setGlobalVar("site_title",$this->_config->app['site_title']);
+        }
+
         //have to get an instance of the FrontController
         $this->_frontController = FrontController::getInstance();
 
@@ -129,6 +141,15 @@ class App {
         $this->_frontController->dispatcher();
     }
 
+    /**
+     * @return GlobalVariables
+     */
+    public function getGlobals(){
+        if ($this->_globals == null) {
+            $this->_globals = GlobalVariables::getInstance();
+        }
+        return $this->_globals;
+    }
     public function view(){
         if ($this->_view == null) {
             $this->_view = View::getInstance();

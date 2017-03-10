@@ -9,7 +9,12 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{@site_title} {#sub_title}</title>
+    <title>{@site_title}
+        {{#if sub_title}}
+            &nbsp;-&nbsp;{#sub_title}
+        {{/if}}
+
+    </title>
 
     <!-- Bootstrap Core CSS -->
     <link href="/resources/css/bootstrap.Cerulean.min.css" rel="stylesheet">
