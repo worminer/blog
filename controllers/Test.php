@@ -42,7 +42,7 @@ class Test extends DefaultController
                 ],
                 [
                     "name" => "Ivan Ivanov",
-                    "apples" => 325,
+                    "apples" => 85,
                     "city" => "Plovdiv",
                 ]
             ],

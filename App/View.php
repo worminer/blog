@@ -84,6 +84,7 @@ class View {
             $this->insertURLPublicFolderPrefix($this->getConfig()->app["site_root"]);
         }
 
+
         if ($this->getConfig()->app["debugging"]) {
             echo "Template Engine -> View Preparation time : ". (microtime(true) - $startTime) ." seconds".PHP_EOL;
         }
@@ -153,7 +154,7 @@ class View {
     /**
      * @throws \Exception
      */
-    public function loadLayout(){
+    private function loadLayout(){
 
         $layoutPath = $this->viewConfig["VIEW_FOLDER"].DIRECTORY_SEPARATOR.$this->getLayoutName().$this->viewConfig["TEMPLATE_EXT"];
 
@@ -167,7 +168,7 @@ class View {
      * @param string $viewName
      * @return string
      */
-    public function loadView(string $viewName){
+    private function loadView(string $viewName){
         $viewPath = $this->viewConfig["VIEW_FOLDER"].DIRECTORY_SEPARATOR.$viewName."View".$this->viewConfig["TEMPLATE_EXT"];
         if (!file_exists($viewPath)) {
             return "Error loading View file ($viewPath).";
@@ -178,14 +179,14 @@ class View {
     /**
      *
      */
-    public function insertBodyView() {
+    private function insertBodyView() {
             $this->setHtml(str_replace($this->viewConfig["TEMPLATE_BODY_TAG"], $this->loadView(trim($this->getViewName())), $this->getHtml()));
     }
 
     /**
      *  will check for helpers and execute them
      */
-    public function executeHelperBlocks(){
+    private function executeHelperBlocks(){
         $viewConfig =  $this->viewConfig;
         $findIfElseBlock = '/' . $viewConfig["IF_BLOCK_START"] . '(?:.*?)' . $viewConfig["IF_BLOCK_END"] . '/si'; // matches everything between {{#if author}} and {{/if}}
         $findUnlessBlock = '/'. $viewConfig["UNLESS_BLOCK_START"] . '(?:.*?)' . $viewConfig["UNLESS_BLOCK_END"] .'/si'; // matches Unless block
@@ -201,7 +202,7 @@ class View {
         );
     }
 
-    public function preformEachBlock(string $block){
+    private function preformEachBlock(string $block){
         $viewConfig =  $this->viewConfig;
         preg_match('/' . $viewConfig["EACH_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
         $varName = $matchesIF[2];  // get the variable name
@@ -312,7 +313,7 @@ class View {
 
     }
 
-    public function preformUnlessBlock(string $block){
+    private function preformUnlessBlock(string $block){
 
         preg_match('/' . $this->viewConfig["UNLESS_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
         $varName = $matchesIF[2];  // get the variable name
@@ -334,7 +335,7 @@ class View {
         }
     }
 
-    public function preformIfBlock(string $block):string {
+    private function preformIfBlock(string $block):string {
 
         preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
         $varName = $matchesIF[2];  // get the variable name
@@ -372,32 +373,28 @@ class View {
      * href="home/index" becomes href="/Path/To/Public/home/index"
      * @param $publicFolder
      */
-    public function insertURLPublicFolderPrefix($publicFolder){
+    private function insertURLPublicFolderPrefix($publicFolder){
         // matches src="" or src=''
-        $patrerns[] = '/(?<=(?:src=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
-        $patrerns[] = '/(?<=(?:href=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
+        $patterns[] = '/(?<=(?:src=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
+        $patterns[] = '/(?<=(?:href=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
+        $patterns[] = '/(?<=action=(?:"|\'))([^http](?:\/|)(?:\w+(?:\/|.|))*)(?="|\')/i';
         //TODO:match actions
-        $this->setHtml(preg_replace($patrerns, "{$publicFolder}$1", $this->getHtml()));
+        $this->setHtml(preg_replace($patterns, "{$publicFolder}$1", $this->getHtml()));
     }
 
     /**
      *
      */
-    public function replaceVariables() {
+    private function replaceVariables() {
         foreach ($this->data as $key => $value) {
-            if (is_array($value)) {
-                //TODO: fix it .. to work wih arrays in arrays..
-//                $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
-//                $this->setHtml(preg_replace("/$replaceTag/i", implode(" ", $value), $this->getHtml()));
-            } else if (is_bool($value)) {
-                if ($value) {
-                    $value = "true";
-                } else {
-                    $value = "false";
+            if (!is_array($value)) {
+                if (is_bool($value)) {
+                    if ($value) {
+                        $value = "true";
+                    } else {
+                        $value = "false";
+                    }
                 }
-                $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
-                $this->setHtml(preg_replace("/$replaceTag/i", $value  , $this->getHtml()));
-            } else {
                 $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_VARIABLE"]);
                 $this->setHtml(preg_replace("/$replaceTag/i", $value, $this->getHtml()));
             }
@@ -407,15 +404,21 @@ class View {
     /**
      *
      */
-    public function replaceGlobalVariables() {
-        $globalVariables = GlobalVariables::getInstance();
+    private function replaceGlobalVariables() {
+        $globalVariables = GlobalVariables::getInstance()->getAllGlobalVar();
 
-        foreach ($globalVariables->getAllGlobalVar() as $key => $value) {
+        foreach ($globalVariables as $key => $value) {
             // ignore arrays because they are not supported
             if (!is_array($value)) {
+                if (is_bool($value)) {
+                    if ($value) {
+                        $value = "true";
+                   } else {
+                        $value = "false";
+                   }
+                }
                 $replaceTag = str_replace("%VAR_NAME%"," *".$key." *",$this->viewConfig["TEMPLATE_GLOBAL_VARIABLE"]);
-                $this->setHtml(preg_replace("/$replaceTag/i", $value, $this->getHtml()));
-                //$this->setHtml(str_replace($replaceTag, $value, $this->getHtml()));
+                $this->setHtml(preg_replace("/$replaceTag/i", (string)$value, $this->getHtml()));
             }
         }
     }

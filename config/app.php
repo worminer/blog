@@ -10,7 +10,6 @@ $config["root_dir"] = realpath("../"); // root dir path
 $config["public_dir"] = str_replace('/','\\', str_replace("index.php", '', $_SERVER['SCRIPT_NAME'])); // public dir path.
 
 $config["site_root"] = rtrim(str_replace("index.php", '', $_SERVER['SCRIPT_NAME']), '/'); // site root url path.
-
 /**
  * if true adds the root dir in front of all local links when rendering
  * use if public dir != DocumentRoot
