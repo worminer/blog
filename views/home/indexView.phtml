@@ -1,4 +1,5 @@
 <!-- Blog Entries Column -->
+
 <div class="col-md-8">
     <div class="well">
         <h1>Welcome to our cool blog system</h1>
@@ -17,8 +18,8 @@
             <div class="carousel-inner" role="listbox">
                 <div class="item active">
                     <a href="/user/register"> <!-- Article Path -->
-                        <img src="/resources/images/asd.jpg"
-                             alt="no picture" width="460" height="345">
+                        <img src=""
+                             alt="no picture" width="460" height="345"> <!-- Article Image Path -->
                         <div class="carousel-caption">
                             <h3>"Article Name"</h3>
                             <p>"Resume about the article /or smth"</p>
@@ -27,7 +28,7 @@
                 </div>
                 <div class="item">
                     <a href=""> <!-- Article Path -->
-                        <img src="/resources/images/dsa.jpg"
+                        <img src=""
                              alt="no picture" width="460" height="345">
                         <div class="carousel-caption">
                             <h3>"Article Name"</h3>
@@ -38,7 +39,7 @@
 
                 <div class="item">
                     <a href=""><!-- Article Path -->
-                        <img src="/resources/images/kk.png"
+                        <img src=""
                              alt="no picture" width="460" height="345">
                         <div class="carousel-caption">
                             <h3>"Article Name"</h3>
@@ -49,7 +50,7 @@
 
                 <div class="item">
                     <a href="">
-                        <img src="/resources/images/qwe.jpg"
+                        <img src=""
                              alt="no picture" width="460" height="345">
                         <div class="carousel-caption">
                             <h3>"Article Name"</h3>
@@ -70,6 +71,29 @@
                 <span class="sr-only">Next</span>
             </a>
         </div>
+
+
+        <!-- Articles (za kolejkata :D) -->
+        <div class="container">
+            <script src="/resources/tinymce/tinymce.min.js"></script>
+            <script>tinymce.init({ selector:'textarea' });</script>
+
+            <form class="form-horizontal" method="post" accept-charset="UTF-8">
+                <h5></h5>
+
+                <label class="control-label" for="title">Title</label>
+                <input class="form-control" type="text" name="title" maxlength="300"/><br/>
+
+                <textarea class="content" name="body"></textarea>
+                <br/>
+
+                <button class="btn btn-primary btn-success pull-left" type="submit" name="submit" >
+                    <span class="glyphicon glyphicon-plus-sign"> <b>Create</b></span></button>
+
+            </form>
+        </div>
+        <!-- Articles (za kolejkata :D) -->
+
     </div>
 </div>
 <!-- Blog Sidebar Widgets Column -->
