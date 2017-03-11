@@ -50,7 +50,6 @@ class MessagesManager
             }
             $this->messages[$type] = array_merge($this->messages[$type],$messages);
         } else {
-            echo "I ama here";
             $this->messages[$type][] = $messages;
         }
         $this->saveMessages();

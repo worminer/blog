@@ -376,7 +376,6 @@ class View {
         if (count($matchesElse) > 0) {
             preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_ELSE"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
-            echo "I ama here";
             if ($existVariable === true) {
                 return $matchesParts[4];
             } else {
