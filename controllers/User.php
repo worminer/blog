@@ -10,6 +10,8 @@ class User extends DefaultController
     /* login functionality */
 
     public function login(){
+        $userModel = new \Models\UserModel();
+        $userModel->test();
         // this will display the user login form
         $this->view->render("user/login");
     }

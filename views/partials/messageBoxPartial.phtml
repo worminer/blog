@@ -1,10 +1,12 @@
-<div class="col-lg-12">
+<div class="col-md-8 col-lg-offset-2">
     {{#if @messagesSuccess}}
-        <spam class="alert alert-success">
+        <div class="alert alert-success">
             {{#each @messagesSuccess}}
-                <p class="button "><b>{{value}}</b></p>
+                <p >
+                    <b>{{value}}</b>
+                </p>
             {{/each}}
-        </spam>
+        </div>
     {{/if}}
 
 
@@ -12,7 +14,9 @@
     {{#if @messagesWarning}}
         <div class="alert alert-warning">
             {{#each @messagesWarning}}
-                <p class="button "><b>{{value}}</b></p>
+                <p >
+                    <b>{{value}}</b>
+                </p>
             {{/each}}
         </div>
     {{/if}}
@@ -21,7 +25,9 @@
     {{#if @messagesError}}
         <div class="alert alert-danger">
                 {{#each @messagesError}}
-                    <p class="button "><b>{{value}}</b></p>
+                    <p class="button ">
+                        <b>{{value}}</b>
+                    </p>
                 {{/each}}
         </div>
     {{/if}}

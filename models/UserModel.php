@@ -31,9 +31,26 @@ class UserModel extends \MVC\Auth
         // hashing the password by using the salt ..
         $passwordHash = $this->getCrypt()->getHash($password,$salt);
 
-        $result = $this->prepare("INSERT INTO `users` (`username`, `email`, `pass_hash`, `pass_salt`) VALUES (?, ?, ?, ?)",
-                                                        [$username, $email, $passwordHash, $salt])->execute();
+        $result = $this->prepare("INSERT INTO `users` (`username`, `email`, `pass_hash`, `pass_salt`) VALUES (?, ?, ?, ?)",[$username, $email, $passwordHash, $salt])->execute();
+
+        // if that failed .. go to return
+        if (!$result->getAffectedRows()) {
+            return false;
+        }
+
+        // inserting roles
+        $result = $this->prepare("INSERT INTO `user_roles` (`user_id`, `role_id`) VALUES ((SELECT users.id FROM users WHERE username=?), (SELECT roles.id FROM roles WHERE role_name='user'))", [$username])->execute();
+
+        // if that failed .. go to return
+        if (!$result->getAffectedRows()) {
+            return false;
+        }
+        // or just return true ..
         return (bool) $result->getAffectedRows();
+    }
+    public function test(){
+
+
     }
 
     private function getCrypt() {
