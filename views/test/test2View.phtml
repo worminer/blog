@@ -1,12 +1,25 @@
 <!-- Blog Entries Column -->
 <div class="col-md-8">
     <div class="well">
-        {{#each categories}}
 
-        href="/categories/edit/{{value["id"]}}/{{value["name"]}}"
+        {{#each categories}}
+        <span>element #{{#number}} has index of {{#index}} in the array:</span>{{value}}" <br>
+        {{else}}
+        <b>There are no links</b>
+        {{/each}}
         <hr>
+        {{#each @messagesSuccess}}
+        <span>element #{{#number}} has index of {{#index}} in the array:</span>{{value}}<br>
+        {{else}}
+        <b>There are no links</b>
         {{/each}}
 
+        {{#if @messagesSuccess}}
+
+        {{else}}
+            else
+        {{/if}}
+        <hr>
     </div>
 </div>
 <!-- Blog Sidebar Widgets Column -->

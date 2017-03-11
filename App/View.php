@@ -104,21 +104,32 @@ class View {
         if ($messages != null) {
             $this->getMessageManager()->setMessage($type, $messages);
         }
+        // redirecting
         if ($this->getConfig()->app["auto_insert_site_root"]) {
             header("Location: {$this->getConfig()->app["site_root"]}{$path}");
         } else {
             header("Location: {$path}");
         }
 
-        die();
+        die(); // not needed but in any case ..
     }
 
     /**
      *
      */
     public function insertMessages(){
-        // TODO: FIX THIS so messages will be inserted inside the template
-        var_dump($this->getMessageManager()->getAllMessages());
+        $globals = GlobalVariables::getInstance();
+        $messages = $this->getMessageManager()->getAllMessages();
+        if (array_key_exists("success",$messages)) {
+            $globals->setGlobalVar("messagesSuccess",$messages["success"]);
+
+        }
+        if (array_key_exists("error",$messages)) {
+            $globals->setGlobalVar("messagesError",$messages["error"]);
+        }
+        if (array_key_exists("warning",$messages)) {
+            $globals->setGlobalVar("messagesWarning",$messages["warning"]);
+        }
         $this->getMessageManager()->flushAllMessages();
     }
 
@@ -203,21 +214,27 @@ class View {
     }
 
     private function preformEachBlock(string $block){
+
         $viewConfig =  $this->viewConfig;
         preg_match('/' . $viewConfig["EACH_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
-        $varName = $matchesIF[2];  // get the variable name
-
-        $arrayVariable = null;
-        // check if variable is set and if it is not we return the original input
-        if (isset($this->data[$varName])) {
-            $arrayVariable = $this->data[$varName];
+        if ($matchesIF[2] == "@") {
+            $variablePool = GlobalVariables::getInstance()->getAllGlobalVar();
         } else {
-            return $block;
+            $variablePool = $this->data;
+        }
+        $needleVarName = $matchesIF[3];  // get the variable name
+
+        $currentVar = null;
+        // check if variable is set and if it is not we return the original input
+        if (array_key_exists($needleVarName,$variablePool)) {
+            $currentVar = $variablePool[$needleVarName];
+        } else {
+            return '';
         }
 
         // if this is not an array return the block back
-        if (!is_array($arrayVariable)) {
-            return $block;
+        if (!is_array($currentVar)) {
+            return "/not an array/";
         }
 
         // check if there is and else block
@@ -227,17 +244,17 @@ class View {
             preg_match('/' . $viewConfig["EACH_BLOCK_START"] . '(.*)' . $viewConfig["EACH_BLOCK_ELSE"] . '(.*)' . $viewConfig["EACH_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
             //var_dump($matchesParts);
-            if (count($arrayVariable) > 0) {
-                $matchedString = $matchesParts[3];
+            if (count($currentVar) > 0) {
+                $matchedString = $matchesParts[4];
             } else {
-                $matchedString = $matchesParts[5];
+                $matchedString = $matchesParts[6];
             }
 
         } else {
             preg_match('/' . $viewConfig["EACH_BLOCK_START"] . '(.*)' . $viewConfig["EACH_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
-            if (count($arrayVariable) > 0) {
-                $matchedString = $matchesParts[3];
+            if (count($currentVar) > 0) {
+                $matchedString = $matchesParts[4];
             } else {
                 $matchedString = '';
             }
@@ -246,7 +263,7 @@ class View {
 
         $counter = 0;
         // parse the string and put the variables inside
-        foreach ($arrayVariable as $key => $value){
+        foreach ($currentVar as $key => $value){
 
             if (is_array($value)) {
                 $valueString = Utill::implodeRecursive(" ",$value);
@@ -336,13 +353,19 @@ class View {
     }
 
     private function preformIfBlock(string $block):string {
-
         preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '/i',$block,$matchesIF); // find if there is else in the if block
-        $varName = $matchesIF[2];  // get the variable name
-        $boolVariable = null;
-        // check if variable is set and if it is not we return the original input
-        if (isset($this->data[$varName])) {
-            $boolVariable = $this->data[$varName];
+
+        if ($matchesIF[2] == "@") {
+            $variablePool = GlobalVariables::getInstance()->getAllGlobalVar();
+        } else {
+            $variablePool = $this->data;
+        }
+
+        $currentVar = $matchesIF[3];  // get the variable name
+        $existVariable = null;
+        // check if variable exist and if it is not we return the empty input
+        if (array_key_exists($currentVar,$variablePool)) {
+            $existVariable = (bool)$variablePool[$currentVar];
         } else {
             return '';
         }
@@ -353,16 +376,17 @@ class View {
         if (count($matchesElse) > 0) {
             preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_ELSE"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
-            if ((bool)$boolVariable === true) {
-                return $matchesParts[3];
+            echo "I ama here";
+            if ($existVariable === true) {
+                return $matchesParts[4];
             } else {
-                return $matchesParts[5];
+                return $matchesParts[6];
             }
         } else {
             preg_match('/' . $this->viewConfig["IF_BLOCK_START"] . '(.*)' . $this->viewConfig["IF_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
-            if ((bool)$boolVariable === true) {
-                return $matchesParts[3];
+            if ($existVariable === true) {
+                return $matchesParts[4];
             } else {
                 return '';
             }
@@ -378,7 +402,7 @@ class View {
         $patterns[] = '/(?<=(?>src=)(?>\'|"))([^http|#](?>\/|)(?>\w+(?:\/|\.|_|-|))+)(?=(?>\'|"))/i';
         $patterns[] = '/(?<=(?>href=)(?>\'|"))([^http|#](?>\/|)(?>\w+(?:\/|\.|_|-|))+)(?=(?>\'|"))/i';
         $patterns[] = '/(?<=(?>action=)(?>\'|"))([^http|#](?>\/|)(?>\w+(?:\/|\.|_|-|))+)(?=(?>\'|"))/i';
-        //TODO:match actions
+
         $this->setHtml(preg_replace_callback($patterns,
             function ($match) use (&$publicFolder){
             //var_dump($match);

@@ -119,7 +119,8 @@ class Test extends DefaultController
                 ]
 
 
-            ]
+            ],
+            "site_title" => "site title from the local pool"
         ];
 
 

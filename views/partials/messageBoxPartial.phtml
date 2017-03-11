@@ -1,0 +1,29 @@
+<div class="col-lg-12">
+    {{#if @messagesSuccess}}
+        <spam class="alert alert-success">
+            {{#each @messagesSuccess}}
+                <p class="button "><b>{{value}}</b></p>
+            {{/each}}
+        </spam>
+    {{/if}}
+
+
+
+    {{#if @messagesWarning}}
+        <div class="alert alert-warning">
+            {{#each @messagesWarning}}
+                <p class="button "><b>{{value}}</b></p>
+            {{/each}}
+        </div>
+    {{/if}}
+
+
+    {{#if @messagesError}}
+        <div class="alert alert-danger">
+                {{#each @messagesError}}
+                    <p class="button "><b>{{value}}</b></p>
+                {{/each}}
+        </div>
+    {{/if}}
+
+</div>

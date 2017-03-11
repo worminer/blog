@@ -9,14 +9,18 @@ class MessagesManager
     private $_session = null;
     private $messages = [];
     private $messageTypes = ["success", "error", "warning"];
-    private $test = null;
 
     /**
      * MessagesManager constructor.
      */
     private function __construct(){
         $this->_session = App::getInstance()->getSession();
-        $this->messages = unserialize($this->_session->MessageManager);
+        $messages = unserialize($this->_session->MessageManager);
+        if (is_array($messages)) {
+            $this->messages = $messages;
+        }
+
+
     }
 
     public static function getInstance():MessagesManager{
@@ -38,13 +42,15 @@ class MessagesManager
         if (!in_array($type, $this->messageTypes)) {
             throw new \Exception("Error: MessageManager setMessage -> Unknown type of '{$type}'!");
         }
-        
+
         if (is_array($messages)) {
-            if (!isset($this->messages[$type])) {
+
+            if (!array_key_exists($type,$this->messages)) {
                 $this->messages[$type] = [];
             }
-            $this->messages = array_merge($this->messages[$type],$messages);
+            $this->messages[$type] = array_merge($this->messages[$type],$messages);
         } else {
+            echo "I ama here";
             $this->messages[$type][] = $messages;
         }
         $this->saveMessages();
@@ -62,7 +68,7 @@ class MessagesManager
         return $this->messages[$type];
     }
 
-    public function getAllMessages(){
+    public function getAllMessages():array {
         return $this->messages;
     }
 

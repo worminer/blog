@@ -23,7 +23,7 @@ $viewConfig["TEMPLATE_GLOBAL_VARIABLE"] = "{@%VAR_NAME%}";
 $viewConfig["TEMPLATE_PARTIAL"] = "{>%PARTIAL_NAME%}";
 
 // if else template block patterns
-$viewConfig["IF_BLOCK_START"]   = '(?:{{ *)(#if)(?: *)(\w+)(?: *}})';  // matches "if" and "author" from {{# if author }} {{#if author}}
+$viewConfig["IF_BLOCK_START"]   = '(?:{{ *)(#if)(?: *)(@|)(\w+)(?: *}})';  // matches "if" and "author" from {{# if author }} {{#if author}}
 $viewConfig["IF_BLOCK_END"]     = '(?:{{ *)(\/if)(?: *}})';             // matches "/if" from {{/if}} or {{ /if }}
 $viewConfig["IF_BLOCK_ELSE"]    = '(?:{{ *)(else)(?: *}})';             // matches  "else" from {{ else }} or {{else}}
 
@@ -34,7 +34,7 @@ $viewConfig["UNLESS_BLOCK_END"]   = '(?:{{ *)(\/unless)(?: *}})';           // t
 
 
 // each block patterns and params
-$viewConfig["EACH_BLOCK_START"]         = '(?:{{ *)(#each)(?: *)(\w+)(?: *}})'; // this matches "#each" and "array" from {{ #each array}}
+$viewConfig["EACH_BLOCK_START"]         = '(?:{{ *)(#each)(?: *)(@|)(\w+)(?: *}})'; // this matches "#each" and "array" from {{ #each array}}
 $viewConfig["EACH_BLOCK_END"]           = '(?:{{ *)(\/each)(?: *}})';           // this matches "/each" from {{ /each }}
 $viewConfig["EACH_BLOCK_ELSE"]          = '(?:{{ *)(else)(?: *}})';             // matches  "else" from {{ else }} or {{else}}
 $viewConfig["EACH_BLOCK_KEY_PARAM"]     = '{{ *key *}}';                 // this matches "key"   from {{ key }}
