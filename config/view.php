@@ -40,7 +40,7 @@ $viewConfig["EACH_BLOCK_ELSE"]          = '(?:{{ *)(else)(?: *}})';             
 $viewConfig["EACH_BLOCK_KEY_PARAM"]     = '{{ *key *}}';                 // this matches "key"   from {{ key }}
 $viewConfig["EACH_BLOCK_VALUE_PARAM"]   = '{{ *value *}}';               // this matches "value" from {{ value }}
 $viewConfig["EACH_BLOCK_VALUE_PARAM_INDEXED"]  = '{{ *value\[ *(\d+) *\] *}}';        // this matches "1" from {{ value[ 1 ] }}
-$viewConfig["EACH_BLOCK_VALUE_PARAM_ASSOC"]  = '{{ *value\[ *" *(\w+) *" *\] *}}';    // this matches "valueKey" from {{ value[ " valueKey " ] }}
+$viewConfig["EACH_BLOCK_VALUE_PARAM_ASSOC"]  = '{{ *value\[ *(?:"|\') *(\w+) *(?:"|\') *\] *}}';    // this matches "valueKey" from {{ value[ " valueKey " ] }}
 $viewConfig["EACH_BLOCK_INDEX_PARAM"]   = '{{ *#index *}}'; // index starting from 0
 $viewConfig["EACH_BLOCK_NUMBER_PARAM"]  = '{{ *#number *}}'; // number is index +1
 

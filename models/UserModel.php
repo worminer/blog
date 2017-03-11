@@ -33,7 +33,6 @@ class UserModel extends \MVC\Auth
 
         $result = $this->prepare("INSERT INTO `users` (`username`, `email`, `pass_hash`, `pass_salt`) VALUES (?, ?, ?, ?)",
                                                         [$username, $email, $passwordHash, $salt])->execute();
-
         return (bool) $result->getAffectedRows();
     }
 

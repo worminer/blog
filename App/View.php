@@ -81,7 +81,7 @@ class View {
         $this->executeHelperBlocks();
 
         if (isset($this->getConfig()->app["auto_insert_site_root"]) && $this->getConfig()->app["auto_insert_site_root"] === true) {
-            $this->insertURLPublicFolderPrefix($this->getConfig()->app["site_root"]);
+           $this->insertURLPublicFolderPrefix($this->getConfig()->app["site_root"]);
         }
 
 
@@ -253,12 +253,12 @@ class View {
                 $valueArr = $value;
             } else {
                 $valueString = $value;
-                $valueArr = [];
+                $valueArr = null;
             }
 
             $values = [
                 'key'         => $key,
-                'valueString' => $valueString,
+                'valueString' => Utill::xss_clean($valueString),
                 'valueArr'    => $valueArr,
                 'index'       => $counter,
                 'number'      => $counter+1,
@@ -284,7 +284,7 @@ class View {
                     }
                     return $currentValues[$match[1]];
                 },
-                '/'.$viewConfig["EACH_BLOCK_VALUE_PARAM_ASSOC"].'/si'  => function ($match) use (&$values){
+               '/'.$viewConfig["EACH_BLOCK_VALUE_PARAM_ASSOC"].'/si'  => function ($match) use (&$values){
                     $currentValues = $values["valueArr"];
                     if (!is_array($currentValues)) {
                         return "/no an array/";
@@ -297,7 +297,8 @@ class View {
                     if (!isset($currentValues[$match[1]])) {
                         return "/no such key in array/";
                     }
-                    return $currentValues[$match[1]];
+                    //var_dump($match);
+                    return Utill::xss_clean($currentValues[$match[1]]);
                 },
                 '/'.$viewConfig["EACH_BLOCK_INDEX_PARAM"].'/si'        => function ($match) use (&$values){return $values["index"];},
                 '/'.$viewConfig["EACH_BLOCK_NUMBER_PARAM"].'/si'       => function ($match) use (&$values){return $values["number"];},
@@ -305,7 +306,6 @@ class View {
             ] ;
 
             $result .= preg_replace_callback_array ( $patterns, $matchedString, -1, $expressionCounter);
-            //$result .= preg_replace($patterns, $values, $matchedString);
             $counter++;
         }
         return $result ;
@@ -375,11 +375,17 @@ class View {
      */
     private function insertURLPublicFolderPrefix($publicFolder){
         // matches src="" or src=''
-        $patterns[] = '/(?<=(?:src=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
-        $patterns[] = '/(?<=(?:href=)(?:\'|"))((?:\/|)[^http](?:\w+(?:\/|.|))*)(?=\'|")/i';
-        $patterns[] = '/(?<=action=(?:"|\'))([^http](?:\/|)(?:\w+(?:\/|.|))*)(?="|\')/i';
+        $patterns[] = '/(?<=(?>src=)(?>\'|"))([^http|#](?>\/|)(?>\w+(?:\/|\.|_|-|))+)(?=(?>\'|"))/i';
+        $patterns[] = '/(?<=(?>href=)(?>\'|"))([^http|#](?>\/|)(?>\w+(?:\/|\.|_|-|))+)(?=(?>\'|"))/i';
+        $patterns[] = '/(?<=(?>action=)(?>\'|"))([^http|#](?>\/|)(?>\w+(?:\/|\.|_|-|))+)(?=(?>\'|"))/i';
         //TODO:match actions
-        $this->setHtml(preg_replace($patterns, "{$publicFolder}$1", $this->getHtml()));
+        $this->setHtml(preg_replace_callback($patterns,
+            function ($match) use (&$publicFolder){
+            //var_dump($match);
+            return $publicFolder.$match[1];
+
+        },
+            $this->getHtml()));
     }
 
     /**

@@ -57,11 +57,73 @@ class Test extends DefaultController
                     25,
                     "Plovdiv",
                 ]
+            ],
+            "categories" => [
+                [
+                    "id" => 4,
+                    "name" => "SMENIH LI TE ?"
+                ],
+                [
+                    "id" => 13,
+                    "name" => "game"
+                ],
+                [
+                    "id" => 15,
+                    "name" => "testmanja"
+                ],
+                [
+                    "id" => 16,
+                    "name" => "kozi4ka"
+                ],
+                [
+                    "id" => 20,
+                    "name" => "Stekich za teb brat"
+                ]
+
+
             ]
         ];
 
 
         // this is the default index so this will display the homepage
         $this->view->render("test/test",$arr);
+    }
+
+    public function me2(){
+
+        if ($this->auth->isLogged()) {
+            echo "user is logged in";
+        }
+        $arr = [
+
+            "categories" => [
+                [
+                    "id" => 4,
+                    "name" => "SMENIH LI !!TE!!??"
+                ],
+                [
+                    "id" => 13,
+                    "name" => "game"
+                ],
+                [
+                    "id" => 15,
+                    "name" => "testmanja"
+                ],
+                [
+                    "id" => 16,
+                    "name" => "kozi4ka"
+                ],
+                [
+                    "id" => 20,
+                    "name" => "Stekich za teb brat"
+                ]
+
+
+            ]
+        ];
+
+
+        // this is the default index so this will display the homepage
+        $this->view->render("test/test2",$arr);
     }
 }
