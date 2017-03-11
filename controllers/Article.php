@@ -177,7 +177,7 @@ class Article extends DefaultController
         $author_id = $this->auth->getCurrentUserId();
         $articleModel = new ArticleModel();
         $result = $articleModel->getArticleByAuthorId($author_id);
-        var_dump($result);
+        //var_dump($result);
         $this->view->render("article/showPost",["results" => $result]);
     }
 
