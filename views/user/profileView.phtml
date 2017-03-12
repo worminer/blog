@@ -1,0 +1,85 @@
+<div class="row user-infos cyruxx">
+    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xs-offset-0 col-sm-offset-0 col-md-offset-1 col-lg-offset-1">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">User information</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+                        <img class="img-circle"
+                             src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
+                             alt="User Pic">
+                    </div>
+                    <div class="col-xs-2 col-sm-2 hidden-md hidden-lg">
+                        <img class="img-circle"
+                             src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=50"
+                             alt="User Pic">
+                    </div>
+                    <div class="col-xs-10 col-sm-10 hidden-md hidden-lg">
+                        <strong>{{value["username"]}}</strong><br>
+                        <dl>
+                            <dt>User role:</dt>
+                            <dd>{{value["role_name"]}}</dd>
+                            <dt>Real Name</dt>
+                            <dd>{{value["real_name"]}}</dd>
+                            <dt>Email</dt>
+                            <dd>{{value["email"]}}</dd>
+                            <dt>Registered since:</dt>
+                            <dd>{{value["creation_date"]}}</dd>
+                        </dl>
+                    </div>
+                    <div class=" col-md-9 col-lg-9 hidden-xs hidden-sm">
+                        <strong>{{value["username"]}}</strong><br>
+                        <table class="table table-user-information">
+                            <tbody>
+                            <tr>
+                                <td>User role:</td>
+                                <td>{{value["role_name"]}}</td>
+                            </tr>
+                            <tr>
+                                <td>Real Name</td>
+                                <td>{{value["real_name"]}}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>{{value["email"]}}</td>
+                            </tr>
+                            <tr>
+                                <td>Registered since:</td>
+                                <td>{{value["creation_date"]}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <div class="pull-right">
+                    <div class="btn btn-sm btn-warning" data-original-title="Edit this user">
+                        <a href="/users/edit/{{value['id']}}">
+                            <i class="glyphicon glyphicon-edit"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">My Posts</h3>
+            </div>
+            <div class="panel-body panel-success">
+                {{#each results}}
+                <div class="panel-body panel-collapse">
+                    <blockquote>{{value["username"]}}</blockquote>
+                    <li>{{value["title"]}}</li>
+                    <li>{{value["content"]}}</li>
+                    <a href="/article/edit/{{value['article_id']}}" class="btn btn-primary btn-sm">Edit</a>
+
+                </div>
+                {{/each}}
+
+            </div>
+        </div>
+    </div>
+</div>
