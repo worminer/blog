@@ -123,6 +123,7 @@ class Auth extends PdoMysql
 
         $result = $this->prepare("UPDATE `users` SET `session_token_expire`=? WHERE session_token=?",
             [$lifeTime,$sessionToken])->execute();
+        $this->getSession()->AuthToken = $sessionToken;
         return (bool) $result->getAffectedRows();
     }
 

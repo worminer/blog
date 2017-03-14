@@ -88,6 +88,7 @@ class User extends DefaultController
         }
 
         $email = $input->post('email'); // get the email from  post
+        $realName = $input->post('real_name'); // get the email from
         $password1 = $input->post('password'); // get the password 1 from post
         $password2 = $input->post('password2'); // get the password 2 from post
 
@@ -97,6 +98,8 @@ class User extends DefaultController
         $this->validate->setRule('matches', $password1 ,$password2, "Passwords are not the same!");
         // check if password is more then 6 symbols
         $this->validate->setRule('minlength', $password1 , 6 , "Password must be more then 6 symbols!");
+        $this->validate->setRule('minlength', $realName , 3 ,  "Your name bust be more then 3 symbols!");
+        $this->validate->setRule('maxlength', $realName , 50 , "Your name can not be more then 50 symbols!");
 
         // validate all filters and if there is an error .. we have to redirect and display the errors
         if ($this->validate->validate() === false) {
@@ -119,7 +122,7 @@ class User extends DefaultController
         // if everything is ok with the registration we redirect the user to the login page
 
         try{
-            if ($userModel->tryRegisterUser($email,$email,$password1)) {
+            if ($userModel->tryRegisterUser($email,$email,$password1,$realName)) {
                 $messageSuccess = "Registration completed successful.";
                 $this->view->redirect("/user/login",$messageSuccess, "success");
             }

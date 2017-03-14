@@ -94,6 +94,10 @@ class Validation
         return (mb_strlen($param) >= $len);
     }
 
+    public static function maxlength($param, $len){
+        return (mb_strlen($param) <= $len);
+    }
+
     public static function required($val) {
         if (is_array($val)) {
             return !empty($val);

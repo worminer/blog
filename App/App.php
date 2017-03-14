@@ -82,7 +82,7 @@ class App {
     }
 
     /**
-     * returns the current instance of app.. or if there is not any .. it will create new instance and return it !
+     * returns the current instance of app.. or if there is not any .. it will createArticle new instance and return it !
      * @return App
      */
     public static function getInstance():App{
@@ -199,7 +199,7 @@ class App {
         }
         //get the connection settings
         $dbConfig = $dbConfigs[$connectionName];
-        //create new PDO connection
+        //createArticle new PDO connection
         $currentDBConn = new \PDO($dbConfig["connection_url"],
             $dbConfig["username"],
             $dbConfig["password"],

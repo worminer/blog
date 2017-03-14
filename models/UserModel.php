@@ -49,7 +49,7 @@ class UserModel extends \MVC\Auth
             //return false;
         }
 
-        // create unique token to identify user
+        // createArticle unique token to identify user
         $sessionToken = $this->getCrypt()->getNewSalt().$this->getCrypt()->getNewSalt();
 
 
@@ -78,18 +78,18 @@ class UserModel extends \MVC\Auth
      * @return bool
      * @throws \Exception
      */
-    public function tryRegisterUser(string $username, string $email, string $password):bool{
+    public function tryRegisterUser(string $username, string $email, string $password, string $realName):bool{
 
         if (!isset($username) || !isset($email) && !isset($passwordHash) && !isset($salt)) {
             throw new \Exception("ERROR: tryRegisterUser -> all parameters are Mandatory user={$username}, email={$email}, password={$password} <-");
         }
 
-        //  create Salt for the user password .. this makes it more unique
+        //  createArticle Salt for the user password .. this makes it more unique
         $salt = $this->getCrypt()->getNewSalt();
         // hashing the password by using the salt ..
         $passwordHash = $this->getCrypt()->getHash($password,$salt);
 
-        $result = $this->prepare("INSERT INTO `users` (`username`, `email`, `pass_hash`, `pass_salt`) VALUES (?, ?, ?, ?)",[$username, $email, $passwordHash, $salt])->execute();
+        $result = $this->prepare("INSERT INTO `users` (`username`, `email`, `pass_hash`, `pass_salt`,`real_name`) VALUES (?, ?, ?, ?, ?)",[$username, $email, $passwordHash, $salt,$realName])->execute();
 
         // if that failed .. throw exception
         if (!$result->getAffectedRows()) {

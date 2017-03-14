@@ -94,7 +94,7 @@ class DBSession extends \MVC\Database\PdoMysql  implements SessionInterface
 
     private function _startNewSession(){
 
-        $this->sessionId = md5(uniqid("gf",true)); //create unique 23 symbol number and hash it to 32 symbols so we have 32 unique session id
+        $this->sessionId = md5(uniqid("gf",true)); //createArticle unique 23 symbol number and hash it to 32 symbols so we have 32 unique session id
 
         $this->prepare("INSERT INTO {$this->tableName} (sessid,valid_untill) VALUES (?,?)",[$this->sessionId,(time() + $this->lifetime)])->execute();
         setcookie($this->sessionName,$this->sessionId,(time() + $this->lifetime),$this->path,$this->domain,(bool)$this->secure,true);
