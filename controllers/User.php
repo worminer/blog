@@ -129,7 +129,18 @@ class User extends DefaultController
             $this->view->redirect("/user/register",$message);
         }
     }
-
+    public function allusers(){
+        $this->view->render("/user/allusers");
+    }
+    public function profile(){
+        $this->view->render("/user/profile");
+    }
+    public function edit(){
+        $this->view->render("/user/edit");
+    }
+    public function delete(){
+        $this->view->render("/user/delete");
+    }
     public function logOut(){
         // to register the user we need an instance of UserModel
         $userModel = new \Models\UserModel();
