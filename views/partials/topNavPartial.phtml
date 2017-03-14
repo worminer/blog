@@ -47,15 +47,27 @@
             </ul>
 
             <ul class="nav navbar-nav pull-right">
-                <li> <a href="/user/login">
+                {{#if @isLogged}}
+                if true do this!
+                {{else}}
+                else do this!
+                {{/if}}
+                <li>
+                    <a href="/user/login">
                         <span class="glyphicon glyphicon-log-in"> </span>
-                        Login</a></li>
-                <li> <a href="/user/register">
+                        Login
+                    </a>
+                </li>
+                <li>
+                    <a href="/user/register">
                         <span class="glyphicon glyphicon-user"> </span>
-                        Register</a></li>
+                        Register
+                    </a>
+                </li>
                 <li> <a href="/user/logout">
                         <span class="glyphicon glyphicon-log-out"> </span> <!-- Show only when logged in-->
-                        Logout</a></li>
+                        Logout</a>
+                </li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->

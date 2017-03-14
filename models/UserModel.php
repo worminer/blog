@@ -15,6 +15,64 @@ class UserModel extends \MVC\Auth
 
     /**
      * @param string $username
+     * @param string $password
+     * @return bool
+     * @throws \Exception
+     * checks if the password matches for this user
+     */
+    public function authenticate(string $username, string $password):bool {
+        if (!isset($username) || !isset($password)) {
+            throw new \Exception("Error: Usermodel->Authenticate-> you did not set Username or Password");
+        }
+        $result = $this ->prepare("SELECT pass_hash,pass_salt FROM users WHERE username=?",[$username]) // make a prepared statement
+        ->execute(); // and after that this needs to be executed so you can receive the result if there is any
+        // after that we need to get the results from the PDO return so we do fetchRllAssoc() ..
+        // this will return the fist result or false if there are no results
+        // if there are no result, we return false
+        if ($result === false) {
+            // you should never come here because there is a check if the user exist before that.. but better be save then sorry
+            throw new \Exception("Error:There is no such user in Database..");
+            //$this->setErrorMessage("Error:There is no such user in Database..");
+            //return false;
+        }
+
+        $result = $result->fetchRllAssoc(); // getting the result
+
+        $passSalt = $result["pass_salt"]; // salt from database
+        $passHash = $result["pass_hash"]; // password hash from database
+
+
+        //var_dump(password_verify($password,$passHash));
+        if (!password_verify($password,$passHash)) {
+            throw new \Exception("Password does not match!");
+            //$this->setErrorMessage("Password does not match!");
+            //return false;
+        }
+
+        // create unique token to identify user
+        $sessionToken = $this->getCrypt()->getNewSalt().$this->getCrypt()->getNewSalt();
+
+
+        $sessionLifeTime = time() + $this->getSession()->getLifeTime();
+
+        // try save it to DB
+        $result = $this->prepare("UPDATE `users` SET `session_token`=?,`session_token_expire`=? WHERE username=?",
+            [$sessionToken,$sessionLifeTime,$username])->execute();
+
+        // if db change is not successful we return an error
+        if (!(bool)$result->getAffectedRows()) {
+            throw new \Exception("Something went wrong with DB! .. session token did not get saved!");
+            //$this->setErrorMessage("Something went wrong with DB! .. session token did not get saved!");
+            //return false;
+        }
+        // if everything is ok we save the same token in session
+        $this->getSession()->AuthToken = $sessionToken;
+
+        return true;
+    }
+
+    /**
+     * @param string $username
      * @param string $email
      * @param string $password
      * @return bool
@@ -33,25 +91,22 @@ class UserModel extends \MVC\Auth
 
         $result = $this->prepare("INSERT INTO `users` (`username`, `email`, `pass_hash`, `pass_salt`) VALUES (?, ?, ?, ?)",[$username, $email, $passwordHash, $salt])->execute();
 
-        // if that failed .. go to return
+        // if that failed .. throw exception
         if (!$result->getAffectedRows()) {
-            return false;
+            throw new \Exception("Something went wrong with registration process!!");
         }
 
         // inserting roles
         $result = $this->prepare("INSERT INTO `user_roles` (`user_id`, `role_id`) VALUES ((SELECT users.id FROM users WHERE username=?), (SELECT roles.id FROM roles WHERE role_name='user'))", [$username])->execute();
 
-        // if that failed .. go to return
+        // if that failed .. throw exception
         if (!$result->getAffectedRows()) {
-            return false;
+            throw new \Exception("Something went wrong.. could not set role 'user' for user {$username}");
         }
         // or just return true ..
         return (bool) $result->getAffectedRows();
     }
-    public function test(){
 
-
-    }
 
     private function getCrypt() {
         if ($this->crypt === null) {

@@ -9,21 +9,21 @@ class User extends DefaultController
 
     /* login functionality */
 
+    /* display the login form */
     public function login(){
-        $userModel = new \Models\UserModel();
-        $userModel->test();
         // this will display the user login form
         $this->view->render("user/login");
     }
 
+    /* handle the login post request */
     public function loginPost(){
         $input = $this->input; // we get the input array that contains all the get and post params
 
         // checking for login parameter in post request ..
         // if there is no such param that means that the wrong form was send or someone access the /user /registerPost url!
-        // that means, we have to redirect the user to the register form
+        // that means, we have to redirect the user to the login form
         if ($input->post("login") == null) {
-            $this->view->redirect("/user/register");
+            $this->view->redirect("/user/login");
         }
 
         $email = $input->post('email'); // get the email from  post request
@@ -31,7 +31,6 @@ class User extends DefaultController
 
         // check if the email is a valid email
         $this->validate->setRule('email', $email , null , "This is not an valid Email!");
-
         // check if password is more then 6 symbols
         $this->validate->setRule('minlength', $password , 6 , "Password must be more then 6 symbols!");
 
@@ -52,7 +51,6 @@ class User extends DefaultController
             $this->view->redirect("/user/login",$error);
         }
 
-
         // if we are here in the code.. that means that there is no reason not to login the user .. so we do it :)
 
         // and we register the user FINALLY!!!
@@ -61,31 +59,30 @@ class User extends DefaultController
         try{
             if ($userModel->authenticate($email,$password)) {
                 $this->view->redirect("/");
-            } else {
-                $this->view->redirect("/",$userModel->getErrorMessage());
             }
         }catch (\Exception $exception){
-            // if there is a problem with the registration we log the message and redirect to the registration page
+            // if there is a problem with the login we log the message and redirect to the registration page
             $message = $exception->getMessage();
-            $this->view->redirect("/user/register",$message);
+            $this->view->redirect("/user/login",$message);
         }
     }
 
     /* register functionality */
 
+    /* display registration form */
     public function register(){
         // this will display the user login form
         $this->view->render("user/register");
-
     }
 
+    /* handle the registration post request */
     public function registerPost(){
 
         $input = $this->input; // we get the input array that contains all the get and post params
 
         // checking for register parameter in post request..
         // if there is no such param that means that the wrong form was send or someone access the /user /registerPost url!
-        // that means, we haveto redirect the user to the register form
+        // that means, we have to redirect the user to the register form
         if ($input->post("register") == null) {
             $this->view->redirect("/user/register");
         }
@@ -100,14 +97,14 @@ class User extends DefaultController
         $this->validate->setRule('matches', $password1 ,$password2, "Passwords are not the same!");
         // check if password is more then 6 symbols
         $this->validate->setRule('minlength', $password1 , 6 , "Password must be more then 6 symbols!");
-        // validate all filters and if there is an error .. we have to redirect and display the errors
 
+        // validate all filters and if there is an error .. we have to redirect and display the errors
         if ($this->validate->validate() === false) {
             $errors = $this->validate->getErrors();
             $this->view->redirect("/user/register",$errors);
         }
 
-        //if we are at this point of the code .. this means that everything is ok with our form information and we can register out user
+        //if we are at this point of the code .. this means that everything is ok with our form information and we can register our user
 
         // to register the user we need an instance of UserModel
         $userModel = new \Models\UserModel();
@@ -124,7 +121,6 @@ class User extends DefaultController
         try{
             if ($userModel->tryRegisterUser($email,$email,$password1)) {
                 $messageSuccess = "Registration completed successful.";
-
                 $this->view->redirect("/user/login",$messageSuccess, "success");
             }
         }catch (\Exception $exception){
@@ -139,6 +135,6 @@ class User extends DefaultController
         $userModel = new \Models\UserModel();
         $userModel->logOut();
         // this will display the user login form
-        $this->view->render("user/login");
+        $this->view->redirect("/user/login","You logged out successfully.","success");
     }
 }
