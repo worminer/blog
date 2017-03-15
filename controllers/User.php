@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Models\UserModel;
 use MVC\DefaultController;
 
 class User extends DefaultController
@@ -132,11 +133,108 @@ class User extends DefaultController
             $this->view->redirect("/user/register",$message);
         }
     }
+
     public function allusers(){
         $this->view->render("/user/allusers");
     }
+
     public function profile(){
-        $this->view->render("/user/profile");
+        $user_id = $this->auth->getCurrentUserId();
+        $userModel = new \Models\UserModel();
+        try{
+            $userData = $userModel->getUserData($user_id);
+            $userRoles =$userModel->getRoles();
+
+            $this->view->render("/user/profile",[
+                "userData" => $userData,
+                "userRoles"=> $userRoles,
+            ]);
+
+        }catch (\Exception $exception){
+            $this->view->redirect("/",$exception->getMessage());
+        }
+
+
+    }
+
+    public function changeProfilePicPost(){
+
+        if (!$this->auth->isLogged()) {
+            $this->view->redirect("/user/login", "You cant change your profile picture if you are not logged in!");
+        }
+        if (!isset($this->config->app['profile_image_upload_dir'])) {
+            $this->view->redirect("/user/profile","ERROR: profile_image_upload_dir is not set !");
+        }
+        $target_dir = $this->config->app['profile_image_upload_dir'];
+
+        if (!isset($this->config->app['profile_image_public_path'])) {
+            $this->view->redirect("/user/profile","ERROR: profile_image_public_path is not set !");
+        }
+        $publicPath = $this->config->app['profile_image_public_path'];
+
+        if (!isset($this->config->app['profile_image_min_size'])) {
+            $this->view->redirect("/user/profile","ERROR: profile_image_min_size is not set !");
+        }
+
+        if (!isset($this->config->app['profile_image_max_size'])) {
+            $this->view->redirect("/user/profile","ERROR: profile_image_max_size is not set !");
+        }
+
+        $input = $this->input;
+        if ($input->file("image") === null) {
+            $this->view->redirect("/user/profile");
+        }
+        $fileInfo = $input->file("image");
+        if ($fileInfo["size"] <= $this->config->app['profile_image_min_size']) {
+            $this->view->redirect("/user/profile", "Image size is to small! or it is bigger then server upload limit!");
+        }
+
+        if ($fileInfo["size"] > $this->config->app['profile_image_max_size']) {
+            $this->view->redirect("/user/profile", "Image size is to big!");
+        }
+
+        if ($input->post("change_profile_pic") == null) {
+            $this->view->redirect("/user/profile");
+        }
+
+        // Check if image file is a actual image or fake image
+        $check = getimagesize($fileInfo["tmp_name"]);
+        if($check === false) {
+            $this->view->redirect("/user/profile","This is not an image!!");
+        }
+
+        $imageFileType = pathinfo($fileInfo["name"],PATHINFO_EXTENSION);
+
+        if ($fileInfo["size"] > $this->config->app['profile_image_formats']) {
+            $this->view->redirect("/user/profile", "Error: profile_image_formats is not set!");
+        }
+        // Allow certain file formats
+        if (!in_array($imageFileType,$this->config->app['profile_image_formats'])) {
+            $this->view->redirect("/user/profile","File format {$imageFileType} is not allowed!");
+        }
+
+        $imageName = md5(uniqid('',true));
+        $target_file = $target_dir . $imageName . '.' .$imageFileType;
+        // Check if file already exists and change the name until its not
+        while(file_exists($target_file)){
+            $imageName = md5(uniqid('',true));
+            $target_file = $target_dir . $imageName . '.' .$imageFileType;
+        }
+
+        $publicPath = $publicPath.$imageName.'.'.$imageFileType;
+        $currentUserId = $this->auth->getCurrentUserId();
+        try {
+            move_uploaded_file($fileInfo["tmp_name"], $target_file);
+
+            $userModel = new UserModel();
+            if ($userModel->setUserProfilePic($currentUserId,$publicPath)) {
+                $this->view->redirect("/user/profile", "Profile picture updated successfully", "success");
+            }
+        }catch (\Exception $exception){
+            $this->view->redirect("/user/profile", $exception->getMessage(), "error");
+        }
+
+
     }
     public function edit(){
         $this->view->render("/user/edit");

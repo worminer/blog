@@ -79,8 +79,12 @@ class Test extends DefaultController
                     "id" => 20,
                     "name" => "Stekich za teb brat"
                 ]
-
-
+            ],
+            "IndexedArr" => ["zeroth", "first","Second"],
+            "AssocArr"  => [
+                "first"  => "fist text",
+                "second" => "second text",
+                "third"  => "third text",
             ]
         ];
 
@@ -120,7 +124,8 @@ class Test extends DefaultController
 
 
             ],
-            "site_title" => "site title from the local pool"
+            "site_title" => "site title from the local pool",
+
         ];
 
 

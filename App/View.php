@@ -202,15 +202,41 @@ class View {
         $findIfElseBlock = '/' . $viewConfig["IF_BLOCK_START"] . '(?:.*?)' . $viewConfig["IF_BLOCK_END"] . '/si'; // matches everything between {{#if author}} and {{/if}}
         $findUnlessBlock = '/'. $viewConfig["UNLESS_BLOCK_START"] . '(?:.*?)' . $viewConfig["UNLESS_BLOCK_END"] .'/si'; // matches Unless block
         $findEachBlock   = '/'. $viewConfig["EACH_BLOCK_START"] . '(?:.*?)' . $viewConfig["EACH_BLOCK_END"] .'/si'; // matches Each block
+        $findIndexedArr  = '/'. $viewConfig["TEMPLATE_VARIABLE_INDEXED_ARRAY"].'/si'; // matches indexed array
+        $findAssocArr    = '/'. $viewConfig["TEMPLATE_VARIABLE_ASSOC_ARRAY"].'/si'; // matches assoc array
 
         $this->setHtml(preg_replace_callback_array(
             [
                 $findIfElseBlock    => function ($match) {return $this->preformIfBlock($match[0]);},
                 $findUnlessBlock    => function ($match) {return $this->preformUnlessBlock($match[0]);},
                 $findEachBlock      => function ($match) {return $this->preformEachBlock($match[0]);},
+                $findIndexedArr     => function ($match) {return $this->preformVariableArray($match);},
+                $findAssocArr       => function ($match) {return $this->preformVariableArray($match);},
             ]
             ,$this->getHtml(),-1,$expressionCounter)
         );
+    }
+
+    private function preformVariableArray($match){
+        if ($match[1] == "@") {
+            $variablePool = GlobalVariables::getInstance()->getAllGlobalVar();
+        } else if($match[1] == "#"){
+            $variablePool = $this->data;
+        }
+        $needleVarName = $match[2];
+        $result = '';
+        if (!isset($variablePool[$needleVarName])) {
+            return "/no such var/";
+        }
+        $currentVar = $variablePool[$needleVarName];
+        $key = $match[3];
+        if (!isset($currentVar[$key])) {
+            return "/no such key/";
+        }
+
+        $result = $currentVar[$key];
+
+        return $result;
     }
 
     private function preformEachBlock(string $block){

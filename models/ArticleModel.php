@@ -76,7 +76,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
     }
 
     public function getArticleByArticleId($article_id):array {
-        $result=$this->prepare("SELECT * FROM `articles` WHERE `article_id`=?",[$article_id])->execute();
+        $result=$this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id WHERE `article_id`=?",[$article_id])->execute();
         $result = $result->fetchRllAssoc(); // this is just because it returns false or array and the interpreter gets the return type wrong
         if ($result === false) {
             throw new \Exception("Data for this article cant be found!");

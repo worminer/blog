@@ -1,24 +1,11 @@
 <!-- Blog Entries Column -->
 <div class="col-md-8">
     <div class="well">
+        {#IndexedArr[1]}<br>
+        {#AssocArr["first"]}<br>
+        {#AssocArr['second']}<br>
 
-        {{#each categories}}
-        <span>element #{{#number}} has index of {{#index}} in the array:</span>{{value}}" <br>
-        {{else}}
-        <b>There are no links</b>
-        {{/each}}
-        <hr>
-        {{#each @messagesSuccess}}
-        <span>element #{{#number}} has index of {{#index}} in the array:</span>{{value}}<br>
-        {{else}}
-        <b>There are no links</b>
-        {{/each}}
 
-        {{#if @messagesSuccess}}
-
-        {{else}}
-            else
-        {{/if}}
         <hr>
     </div>
 </div>

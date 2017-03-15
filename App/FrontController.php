@@ -74,6 +74,7 @@ class FrontController
         $inputData = \MVC\InputData::getInstance();
         $inputData->setGet($router->getGetParams());
         $inputData->setPost($router->getPost());
+        $inputData->setFile($router->getFile());
 
         $namespace  = $router->getControllerNamespace();
         if ($namespace == null) {

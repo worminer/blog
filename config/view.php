@@ -10,17 +10,29 @@ $viewConfig["TEMPLATE_EXT"] = ".phtml";             // extension for the views .
 
 $viewConfig["TEMPLATE_BODY_TAG"] = "{%body%}";      // this tag shows where the view will be inserted
 
+// This tag shows to View controller where to replace all the Partials in the file
+// %VAR_NAME% will be replaced with variable name, so if you edit it you have to put %VAR_NAME%..
+
+$viewConfig["TEMPLATE_PARTIAL"] = "{>%PARTIAL_NAME%}";
 // This tag shows to View controller where to replace all the variables given to him
 // %VAR_NAME% will be replaced with variable name, so if you edit it you have to put %VAR_NAME%..
 $viewConfig["TEMPLATE_VARIABLE"] = "{#%VAR_NAME%}";
+
+
 
 // This tag shows to View controller where to replace all the variables given to him
 // %VAR_NAME% will be replaced with variable name, so if you edit it you have to put %VAR_NAME%..
 $viewConfig["TEMPLATE_GLOBAL_VARIABLE"] = "{@%VAR_NAME%}";
 
-// This tag shows to View controller where to replace all the Partials in the file
-// %VAR_NAME% will be replaced with variable name, so if you edit it you have to put %VAR_NAME%..
-$viewConfig["TEMPLATE_PARTIAL"] = "{>%PARTIAL_NAME%}";
+/* match global and local variables as arrays
+ * {#varName[1]} - indexed array from local scope
+ * {@varName[1]} - indexed array from global scope
+ * {#varName["key"]} - assoc array from local scope
+ * {@varName["key"]} - assoc array from global scope
+ *
+*/
+$viewConfig["TEMPLATE_VARIABLE_INDEXED_ARRAY"] = '{ *(#|@)(\w+)\[ *(\d+) *\] *}';
+$viewConfig["TEMPLATE_VARIABLE_ASSOC_ARRAY"] = '{ *(#|@)(\w+)\[ *(?:\'|") *(\w+) *(?:\'|") *\] *}';
 
 // if else template block patterns
 $viewConfig["IF_BLOCK_START"]   = '(?:{{ *)(#if)(?: *)(@|)(\w+)(?: *}})';  // matches "if" and "author" from {{# if author }} {{#if author}}

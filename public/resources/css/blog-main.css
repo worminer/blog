@@ -71,5 +71,10 @@ footer {
 .table-user-information > tbody > tr > td {
     border-top: 0;
 }
-
+.profile-picture {
+    background: url("../images/users/NoProfilePic.jpg");
+    background-size: contain;
+    width: 200px;
+    height: 250px
+}
 /** End of Contact/show **/

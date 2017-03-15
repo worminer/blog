@@ -23,6 +23,8 @@ class CAPRouter implements RouterInterface
     private $params = [];
 
     private $postData = [];
+
+    private $fileData = [];
     /**
      * returns URI
      * @return string
@@ -49,6 +51,7 @@ class CAPRouter implements RouterInterface
         }
         $this->params = $urlParams;
         $this->postData = $_POST;
+        $this->fileData = $_FILES;
     }
 
     /**
@@ -88,5 +91,10 @@ class CAPRouter implements RouterInterface
     public function getPost()
     {
        return $this->postData;
+    }
+
+    public function getFile()
+    {
+        return $this->fileData;
     }
 }

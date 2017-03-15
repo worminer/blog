@@ -9,7 +9,16 @@ $config["root_dir"] = realpath("../"); // root dir path
 
 $config["public_dir"] = str_replace('/','\\', str_replace("index.php", '', $_SERVER['SCRIPT_NAME'])); // public dir path.
 
+
+
 $config["site_root"] = rtrim(str_replace("index.php", '', $_SERVER['SCRIPT_NAME']), '/'); // site root url path.
+
+/* user profile setup */
+$config["profile_image_upload_dir"] = $config["root_dir"].'\public\resources\images\users\profile_images\\';
+$config["profile_image_public_path"] = "/resources/images/users/profile_images/";
+$config["profile_image_min_size"] = 5; // min picture size in bites
+$config["profile_image_max_size"] = 5 * 1024 * 1024; // max picture size in bites
+$config["profile_image_formats"] = ["jpg", "jpeg", 'png', 'gif'];
 /**
  * if true adds the root dir in front of all local links when rendering
  * use if public dir != DocumentRoot

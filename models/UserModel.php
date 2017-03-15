@@ -107,6 +107,24 @@ class UserModel extends \MVC\Auth
         return (bool) $result->getAffectedRows();
     }
 
+    public function getUserData($id) {
+        $result = $this->prepare("SELECT id,username,real_name,email,creation_date,profile_pic FROM users WHERE id=?", [$id])->execute();
+        $return = $result->fetchRllAssoc();
+        if ($return === false) {
+            throw new \Exception("There is no such id!");
+        }
+        return $return ;
+    }
+    public function setUserProfilePic($id,$path) {
+        $result = $this->prepare("UPDATE `users` SET profile_pic=? WHERE id=?", [$path,$id])->execute();
+
+        // if that failed .. throw exception
+        if (!$result->getAffectedRows()) {
+            throw new \Exception("Something went wrong.. could not set profile pic url");
+        }
+        // or just return true ..
+        return (bool) $result->getAffectedRows();
+    }
 
     private function getCrypt() {
         if ($this->crypt === null) {

@@ -38,4 +38,6 @@ interface RouterInterface
      * ill return post params
      */
     public function getPost();
+
+    public function getFile();
 }

@@ -273,7 +273,6 @@ class Article extends DefaultController
             $errorMessage = $exception->getMessage();
             $this->view->redirect("/article/myArticles", $errorMessage, "error");
         }
-        var_dump($articleData);
         $this->view->render("/article/showArticle", ["result" => $articleData]);
     }
 }
