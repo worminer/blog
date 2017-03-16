@@ -134,10 +134,7 @@ class User extends DefaultController
         }
     }
 
-    public function allusers(){
-        $this->view->render("/user/allusers");
-    }
-
+    /* display user profile */
     public function profile(){
         $user_id = $this->auth->getCurrentUserId();
         $userModel = new \Models\UserModel();
@@ -157,6 +154,7 @@ class User extends DefaultController
 
     }
 
+    /* handle post and file for changing user profile picture */
     public function changeProfilePicPost(){
 
         if (!$this->auth->isLogged()) {
@@ -236,12 +234,18 @@ class User extends DefaultController
 
 
     }
+
+    public function allusers(){
+        $this->view->render("/user/allusers");
+    }
     public function edit(){
         $this->view->render("/user/edit");
     }
     public function delete(){
         $this->view->render("/user/delete");
     }
+
+    /* loging out logic */
     public function logOut(){
         // to register the user we need an instance of UserModel
         $userModel = new \Models\UserModel();

@@ -2,6 +2,7 @@
 namespace Controllers;
 
 use Models\ArticleModel;
+use Models\CategoriesModel;
 use MVC\DefaultController;
 
 class Article extends DefaultController
@@ -12,15 +13,26 @@ class Article extends DefaultController
         if (!$this->auth->isLogged()) {
             $this->view->redirect("/user/login","You have to be logged in to createArticle article!");
         }
-        $this->view->render("article/createArticle",["sub_title" => "Create New Article"]);
+        $categoriesModel = new CategoriesModel();
+        try{
+            $categories = $categoriesModel->getCategories();
+            $this->view->render("article/createArticle",[
+                "sub_title" => "Create New Article",
+                "categories" => $categories,
+            ]);
+        }catch (\Exception $exception){
+            $this->view->redirect("/article/myArticles",$exception->getMessage());
+        }
+
     }
+
     /* create new article */
     public function createPost()
     {
         $input = $this->input;
 
         if ($input->post('createArticle') === null){
-            $this->view->redirect("/article/createArticle");
+            $this->view->redirect("/article/create");
         }
 
         if (!$this->auth->isLogged()) {
@@ -31,18 +43,24 @@ class Article extends DefaultController
         $title = $input->post('title',"trim");
         $content = $input->post('content');
 
+        if (empty($input->post('selected_categories')) || count($input->post('selected_categories')) == 0) {
+            $this->view->redirect("/article/create","Article have to be in at least one category!");
+        }
+        $categories = $input->post('selected_categories');
+
+
         $this->validate->setRule('minlength', $title , 5 , "Article title is to short!");
         $this->validate->setRule('minlength', $content , 10 , "Article content is to short!");
 
         if ($this->validate->validate() === false) {
             $errors = $this->validate->getErrors();
-            $this->view->redirect("/article/createArticle",$errors);
+            $this->view->redirect("/article/create",$errors);
         }
 
         $articleModel = new ArticleModel();
 
         try{
-            if ($articleModel->createArticle($author_id, $title, $content)) {
+            if ($articleModel->createArticle($author_id, $title, $content,$categories)) {
                 $this->view->redirect("/article/myArticles", "Article Created Successfully.", "success");
             }
         }catch (\Exception $exception) {
@@ -50,53 +68,63 @@ class Article extends DefaultController
             $this->view->redirect("/article/create", $errorMessage, "error");
         }
     }
+
     /* display editArticle view */
     public function edit(){
         $input = $this->input;
-        if (empty($input->get(0))) {
+        if (empty($input->get(0,'int'))) {
             $this->view->redirect("/article/myArticles", "There is no such article!", "error");
         }
 
         $article_id = $input->get(0,"int");
-        if (empty($article_id)) {
-            $this->view->redirect("/article/myArticles", "This is not an valid article id!", "error");
-        }
 
         $articleModel = new ArticleModel();
-        $articleData = []; // so it will not cry like a baby ..
+        $categoriesModel = new CategoriesModel();
+
         try{
+            $categories = $categoriesModel->getCategories();
+            $articleCategories = $articleModel->getArticleCategoriesByArticleId($article_id);
+
+            $categoriesNA = array_filter($categories,function ($match) use ($articleCategories) {
+                foreach ($articleCategories as $articleCategory) {
+                    if ($match['id'] == $articleCategory["category_id"]) {
+                        return;
+                    }
+                }
+                return $match;
+            });
+
             $articleData = $articleModel->getArticleByArticleId($article_id);
+            $this->view->render("article/editArticle",[
+                    "article_id" => $article_id,
+                    "title" => $articleData["title"],
+                    "content" => $articleData["content"],
+                    "categoriesNA" => $categoriesNA,
+                    "categoriesAD" => $articleCategories,
+                ]
+            );
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
             $this->view->redirect("/article/myArticles", $errorMessage, "error");
         }
 
-        $this->view->render("article/editArticle",[
-                "article_id" => $article_id,
-                "title" => $articleData["title"],
-                "content" => $articleData["content"]
-            ]
-        );
+
     }
 
-    /* edit an article */
+    /* handles an article logic */
     public function editPost()
     {
-
         $input = $this->input;
 
         if ($input->post('editArticle') === null){
             $this->view->redirect("/article/edit");
         }
 
-        if (empty($input->get(0))){
+        if (empty($input->get(0,"int"))){
             $this->view->redirect("/article/edit", "There is no article id");
         }
 
         $articleID = $input->get(0,'int');
-        if (empty($articleID)){
-            $this->view->redirect("/article/edit", "This is not an valid article id!");
-        }
 
         if (!$this->auth->isLogged()) {
             $this->view->redirect("/user/login", "You cant edit an Article if you are not logged in!");
@@ -104,6 +132,8 @@ class Article extends DefaultController
 
         $title = $input->post('title',"trim");
         $content = $input->post('content');
+
+        $categories = $input->post('selected_categories');
 
         $this->validate->setRule('numeric', $articleID , null , "Article id is not an valid id");
         $this->validate->setRule('minlength', $title , 5 , "Article title is to short!");
@@ -118,18 +148,16 @@ class Article extends DefaultController
         $articleModel = new ArticleModel();
         $articleAuthorId = null; // so it wont cry for it not been defined
         try{
-            $articleAuthorId = $articleModel->getAuthorIdFromPost($articleID);
+            $articleAuthorId = $articleModel->getAuthorIdFromArticle($articleID);
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
             $this->view->redirect("/article/edit", $errorMessage , "error");
         }
 
-
-
         if ($articleAuthorId == $user_id) {
             try{
 
-                if ($articleModel->editPost($title, $content, $articleID)){
+                if ($articleModel->editArticle($title, $content, $articleID,$categories)){
                     $this->view->redirect("/article/myArticles/{$articleID}", "Article Edited Successfully", "success");
                 }
 
@@ -143,6 +171,7 @@ class Article extends DefaultController
 
     }
 
+    /* displays article delete view*/
     public function delete()
     {
         $input = $this->input;
@@ -160,21 +189,40 @@ class Article extends DefaultController
 
         $articleModel = new ArticleModel();
         $articleData = []; // so it will not cry like a baby ..
+
         try{
+
             $articleData = $articleModel->getArticleByArticleId($articleID);
+            $articleCategories =  $articleModel->getArticleCategoriesByArticleId($articleData["article_id"]);
+            $articleData["categories_string"] = '';
+            $counter = count($articleCategories);
+            foreach ($articleCategories as $articleCategory) {
+                $articleData["categories_string"] .=  $articleCategory["name"];
+                if ($counter > 1) {
+                    $articleData["categories_string"] .= ", ";
+                }
+                $counter--;
+            }
+
+            if ($articleData["categories_string"] == '') {
+                $articleData["categories_string"] = 'There are categories for this article!';
+            }
+
+
+            $this->view->render("article/deleteArticle",[
+                    "article_id" => $articleID,
+                    "title" => $articleData["title"],
+                    "content" => $articleData["content"],
+                    "categories_string" => $articleData["categories_string"],
+                ]
+            );
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
             $this->view->redirect("/article/myArticles", $errorMessage, "error");
         }
-
-        $this->view->render("article/deleteArticle",[
-                "article_id" => $articleID,
-                "title" => $articleData["title"],
-                "content" => $articleData["content"]
-            ]
-        );
     }
 
+    /* handles article delete logic */
     public function deletePost()
     {
         $input = $this->input;
@@ -200,7 +248,7 @@ class Article extends DefaultController
         $articleModel = new ArticleModel();
         $articleAuthorId = null; // so it wont cry for it not been defined
         try{
-            $articleAuthorId = $articleModel->getAuthorIdFromPost($articleID);
+            $articleAuthorId = $articleModel->getAuthorIdFromArticle($articleID);
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
             $this->view->redirect("/article/edit", $errorMessage , "error");
@@ -209,7 +257,7 @@ class Article extends DefaultController
         if ($articleAuthorId == $user_id) {
             try{
 
-                if ($articleModel->deletePost($articleID)) {
+                if ($articleModel->deleteArticle($articleID)) {
                     $this->view->redirect("/article/myArticles", "Article deleted Successfully.", "success");
                 }
 
@@ -232,28 +280,70 @@ class Article extends DefaultController
         $author_id = $this->auth->getCurrentUserId();
         $articleModel = new ArticleModel();
         try{
-            $result = $articleModel->getArticlesByAuthorId($author_id);
-            $this->view->render("article/myArticles",["results" => $result]);
+            $articles = $articleModel->getArticlesByAuthorId($author_id);
+            $articlesUpdated = [];
+            foreach ($articles as $article) {
+                $articleCategories =  $articleModel->getArticleCategoriesByArticleId($article["article_id"]);
+                $article["categories_string"] = '';
+                $counter = count($articleCategories);
+                foreach ($articleCategories as $articleCategory) {
+                    $article["categories_string"] .=  $articleCategory["name"];
+                    if ($counter > 1) {
+                        $article["categories_string"] .= ", ";
+                    }
+                    $counter--;
+                }
+
+                if ($article["categories_string"] == '') {
+                    $article["categories_string"] = 'There are categories for this article!';
+                }
+                $articlesUpdated[] = $article;
+            }
+            $this->view->render("article/myArticles",[
+                "articles" => $articlesUpdated,
+            ]);
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
             $this->view->redirect("/home/index", $errorMessage, "error");
         }
     }
 
-    /* show all articles by all users */
+    /* displays all articles by all users */
     public function AllArticles(){
         $articleModel=new ArticleModel();
 
         try{
-            $result=$articleModel->getAllArticles();
-            $this->view->render("article/allArticles",["results"=>$result]);
+            $allArticles=$articleModel->getAllArticles();
+            $articlesUpdated = [];
+            foreach ($allArticles as $article) {
+                $articleCategories =  $articleModel->getArticleCategoriesByArticleId($article["article_id"]);
+                $article["categories_string"] = '';
+                $counter = count($articleCategories);
+                foreach ($articleCategories as $articleCategory) {
+                    $article["categories_string"] .=  $articleCategory["name"];
+                    if ($counter > 1) {
+                        $article["categories_string"] .= ", ";
+                    }
+                    $counter--;
+                }
+
+                if ($article["categories_string"] == '') {
+                    $article["categories_string"] = 'There are categories for this article!';
+                }
+                $articlesUpdated[] = $article;
+            }
+
+            $this->view->render("article/allArticles",[
+                "allArticles"=>$articlesUpdated]
+            );
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
-            $this->view->redirect("/article/createArticle", $errorMessage, "error");
+            $this->view->redirect("/article/create", $errorMessage, "error");
         }
 
     }
 
+    /* display article by id */
     public function articleId()
     {
         $input = $this->input;
@@ -269,10 +359,30 @@ class Article extends DefaultController
         $articleModel = new ArticleModel();
         try{
             $articleData = $articleModel->getArticleByArticleId($articleID);
+
+            $articleUpdated = [];
+
+            $articleCategories =  $articleModel->getArticleCategoriesByArticleId($articleData["article_id"]);
+            $articleData["categories_string"] = '';
+            $counter = count($articleCategories);
+            foreach ($articleCategories as $articleCategory) {
+                $articleData["categories_string"] .=  $articleCategory["name"];
+                if ($counter > 1) {
+                    $articleData["categories_string"] .= ", ";
+                }
+                $counter--;
+            }
+
+            if ($articleData["categories_string"] == '') {
+                $articleData["categories_string"] = 'There are categories for this article!';
+            }
+
+            $this->view->render("/article/showArticle", ["result" => $articleData]);
+
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
             $this->view->redirect("/article/myArticles", $errorMessage, "error");
         }
-        $this->view->render("/article/showArticle", ["result" => $articleData]);
+
     }
 }

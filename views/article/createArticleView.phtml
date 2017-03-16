@@ -14,7 +14,14 @@
                     <div class="form-group">
                         <textarea class="form-control" placeholder="Post Content" name="content" type="text"  required></textarea>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
+                        <select multiple="multiple" name="selected_categories[]" class="form-control">
+                            {{#each categories}}
+                                <option value="{{value['id']}}">{{value['name']}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-md-3 down">
                         <input class="btn btn-lg btn-primary btn-block" type="submit" value="Create New Article" name="createArticle" >
                     </div>
                 </fieldset>

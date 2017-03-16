@@ -170,9 +170,6 @@ class Auth extends PdoMysql
         return $this->errorMessage;
     }
 
-    private function setErrorMessage(string $message){
-        $this->errorMessage = $message;
-    }
 
     private function getCrypt() {
         if ($this->crypt === null) {

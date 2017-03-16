@@ -9,47 +9,108 @@ class ArticleModel extends \MVC\Database\PdoMysql
      * @param int $author_id
      * @param string $title
      * @param string $content
+     * @param array $categories
      * @return bool
      * @throws \Exception
      */
 
-    public function createArticle(int $author_id, string $title, string $content):bool
+    public function createArticle(int $author_id, string $title, string $content, array $categories):bool
     {
         if (!isset($author_id) && !isset($title) && !isset($content)) {
             throw new \Exception("ERROR: ArticleModel->createArticle -> all parameters are Mandatory title={$title}, content={$content} <-");
         }
 
-        $result = $this->prepare("INSERT INTO `articles`( `author_id`, `title`, `content`) VALUES (?,?,?)", [$author_id,$title,$content]);
-
-        $result->execute();
+        $result = $this->prepare("INSERT INTO `articles`( `author_id`, `title`, `content`) VALUES (?,?,?)", [$author_id,$title,$content])->execute();
 
         if  (!$result->getAffectedRows()){
             throw new \Exception("Error:Something went wrong! Article was not saved in DB!");
         }
 
+        $message = "";
+        // inserting categories
+        //probably it will be better to use transaction tho..
+        foreach ($categories as $category){
+            // inserting categories
+            $result = $this->prepare("INSERT INTO `article_categories` (`article_id`, `category_id`) VALUES ((SELECT article_id FROM articles WHERE author_id=? ORDER BY article_id DESC limit 1), ?)", [$author_id,$category])->execute();
+            if (!$result->getAffectedRows()) {
+                $message .= "Something went wrong when adding category {$category} for article title:{$title}<br>";
+            }
+        }
+
+        if ($message != "") {
+            throw new \Exception($message);
+        }
+
         return true;
     }
 
-    public function editPost($title,$content,$article_id):bool {
+    public function editArticle($title, $content, $article_id, array $categories):bool {
         $result = $this->prepare("UPDATE `articles` SET `title`=?,`content`=? WHERE `article_id`=?", [$title, $content, $article_id]);
         $result->execute();
         if (!$result->getAffectedRows()) {
-            throw new \Exception("Error: Article edit was not was not saved in DB!");
+            //throw new \Exception("Error: Article edit was not was not saved in DB!");
+        }
+
+        // get all categories for this article id
+        $result = $this->prepare("SELECT category_id FROM article_categories WHERE article_id=?", [$article_id])->execute();
+        $currentCategories = $result->fetchAllAssoc();
+        // delete all categories for article id
+        //$result = $this->prepare("DELETE FROM article_categories WHERE article_id=?", [$article_id])->execute();
+        $categoriesToSave = array_filter($categories,function ($match) use ($currentCategories) {
+            foreach ($currentCategories as $articleCategory) {
+                if ($match == $articleCategory["category_id"]) {
+                    return;
+                }
+            }
+            return $match;
+        });
+        $categoriesToDelete = array_filter($currentCategories,function ($match) use ($categories) {
+            foreach ($categories as $category) {
+                if ($match["category_id"] == $category) {
+                    return;
+                }
+            }
+            return $match;
+        });
+        $message = "";
+        // inserting categories
+        //probably it will be better to use transaction tho..
+        foreach ($categoriesToDelete as $category){
+            // inserting categories
+            //var_dump($categories);
+            //var_dump($categoriesToDelete);
+            $result = $this->prepare("DELETE FROM article_categories WHERE article_id=? and category_id=?", [$article_id,$category["category_id"]])->execute();
+            if (!$result->getAffectedRows()) {
+                $message .= "Something went wrong when deleting category {$category} for article title:{$title}<br>";
+            }
+        }
+
+        foreach ($categoriesToSave as $category){
+            // inserting categories
+            $result = $this->prepare("INSERT INTO `article_categories` (`article_id`, `category_id`) VALUES (?, ?)", [$article_id,$category])->execute();
+            if (!$result->getAffectedRows()) {
+                $message .= "Something went wrong when adding category {$category} for article title:{$title}<br>";
+            }
+        }
+
+
+
+        if ($message != "") {
+            throw new \Exception($message);
         }
         return true;
     }
 
-    public function deletePost($article_id){
-        $result=$this->prepare("DELETE FROM `articles` WHERE `article_id`=?",[$article_id]);
-        $result->execute();
+    public function deleteArticle($article_id){
+        $result=$this->prepare("DELETE FROM `article_categories` WHERE `article_id`=?",[$article_id])->execute();
+        $result=$this->prepare("DELETE FROM `articles` WHERE `article_id`=?",[$article_id])->execute();
         if  (!$result->getAffectedRows()){
             throw new \Exception("Error: Article was not edit in DB!");
-
         }
         return true;
     }
 
-    public function getAuthorIdFromPost($article_id):int {
+    public function getAuthorIdFromArticle($article_id):int {
 
         $result=$this->prepare("SELECT `author_id` FROM `articles` WHERE `article_id`=?",[$article_id]);
         $result->execute();
@@ -62,7 +123,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
 
     public function getAllArticles():array
     {
-        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id");
+        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id ORDER BY created_at DESC ");
         $result->execute();
         if  (!$result->getAffectedRows()){
             throw new \Exception("Error: The request is not fulfilled!");
@@ -86,6 +147,11 @@ class ArticleModel extends \MVC\Database\PdoMysql
 
     public function getAuthorNameById($author_id) {
         $result=$this->prepare("SELECT `username` FROM `users` WHERE `id`=?",[$author_id])->execute();
+        return $result->fetchAllAssoc();
+    }
+
+    public function getArticleCategoriesByArticleId($article_id){
+        $result=$this->prepare("SELECT category_id,name FROM article_categories as ac JOIN categories AS c 	ON ac.category_id=c.id WHERE ac.article_id=?",[$article_id])->execute();
         return $result->fetchAllAssoc();
     }
 

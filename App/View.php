@@ -90,8 +90,6 @@ class View {
         }
 
         die($this->getHtml()) ;
-
-
     }
 
     /**
@@ -275,7 +273,6 @@ class View {
             } else {
                 $matchedString = $matchesParts[6];
             }
-
         } else {
             preg_match('/' . $viewConfig["EACH_BLOCK_START"] . '(.*)' . $viewConfig["EACH_BLOCK_END"] . '/si',$block,$matchesParts);
             // check if the if statement is true or false and return the proper awnser
@@ -285,12 +282,15 @@ class View {
                 $matchedString = '';
             }
         }
+
         $result = "";
+        if (count($currentVar) == 0) {
+            $result = $matchedString;
+        }
 
         $counter = 0;
         // parse the string and put the variables inside
         foreach ($currentVar as $key => $value){
-
             if (is_array($value)) {
                 $valueString = Utill::implodeRecursive(" ",$value);
                 $valueArr = $value;

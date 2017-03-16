@@ -1,7 +1,7 @@
 <!-- Blog Login Form  -->
 <div class="col-md-10 col-md-offset-1">
-    {{#if results}}
-    {{#each results}}
+    {{#if allArticles}}
+    {{#each allArticles}}
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
@@ -20,6 +20,9 @@
 
         </div>
         <div class="panel-footer">
+            <div class="well text-capitalize">
+                <strong>In categories:</strong>  <em>{{value["categories_string"]}}</em>
+            </div>
             <span>
                 <a href="/article/articleId/{{value["article_id"]}}">Show more..</a>
             </span>

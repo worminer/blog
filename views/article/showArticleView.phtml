@@ -4,7 +4,7 @@
 
     <div class="panel panel-primary">
         <div class="panel-heading">
-            <h3 class="panel-title">
+            <h3 class="panel-title text-capitalize">
                 {#result["title"]}
                 <span class=" pull-right">
                     <b> Writen by:</b>  {#result["real_name"]}
@@ -13,18 +13,19 @@
         </div>
         <div class="panel-body">
             <div class="panel-body panel-collapse">
-                <div class="well">
-                    {{#result["content"]}}
+                <div class="well text-capitalize">
+                    {#result["content"]}
+                </div>
+                <div class="well pull-right">
+                    <strong>Written at:</strong> {#result["created_at"]}
+                </div>
+                <div class="well text-capitalize">
+                    <strong>In categories:</strong>  <em>{#result["categories_string"]}</em>
                 </div>
             </div>
+
         </div>
         <div class="panel-footer">
-            <span>
-                &nbsp;
-            </span>
-            <span class="pull-right">
-               <b>Written at:</b> {#result["created_at"]}
-            </span>
         </div>
     </div>
     <hr>
