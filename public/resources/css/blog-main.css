@@ -72,9 +72,15 @@ footer {
     border-top: 0;
 }
 .profile-picture {
-    background: url("../images/users/NoProfilePic.jpg");
+    background: url("../images/users/NoProfilePic.jpg") no-repeat;
     background-size: contain;
     width: 200px;
     height: 250px
+}
+.profile-picture-small{
+    background: url("../images/users/NoProfilePic.jpg") no-repeat;
+    background-size: contain;
+    width: 40px;
+    height: 50px
 }
 /** End of Contact/show **/

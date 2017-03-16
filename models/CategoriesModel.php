@@ -29,6 +29,7 @@ class CategoriesModel extends PdoMysql
 
     public function deleteCategory(string $id)
     {
+        $result = $this->prepare('DELETE FROM `article_categories` WHERE category_id=(?)', [$id])->execute();
         $result = $this->prepare('DELETE FROM `categories` WHERE id=(?)', [$id])->execute();
         return (bool) $result->getAffectedRows();
     }

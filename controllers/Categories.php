@@ -20,14 +20,50 @@ class Categories extends DefaultController
         $categoryModel = new CategoriesModel();
         try{
             $categories = $categoryModel->getCategories();
-            $this->view->render("category/manage",["categories"=> $categories]);
+            $this->view->render("admin/categories/manage",["categories"=> $categories]);
         }catch (\Exception $exception){
             $this->view->redirect("/user/login/",$exception->getMessage());
         }
 
     }
+    /* handles adding new categories */
+    public function addPost(){
 
-    /* display the delete category by id form */
+        if ($this->input->post("category_create") === null){
+            $this->view->redirect("/categories/manage");
+        }
+
+        if (!$this->auth->isLogged()) {
+            $this->view->redirect("/user/login", "You can not add new categories if you are not logged in!");
+        }
+
+        if (!$this->auth->isInRole("admin")) {
+            $this->view->redirect("/user/login", "You can not manage categories if you are not Admin!");
+        }
+
+        $categoryName = $this->input->post("category_name");
+
+        $this->validate->setRule("minlength",$categoryName,3, "Category name length must be more then 3 symbols!");
+
+        if ($this->validate->validate() === false){
+            $error = $this->validate->getErrors();
+            $this->view->redirect("/categories/manage",$error);
+        }
+
+        $categoryModel = new CategoriesModel();
+        try{
+            if ($categoryModel->hasCategory($categoryName)){
+                $this->view->redirect("/categories/manage","This categories already exist!");
+            }
+
+            if($categoryModel->addNewCategory($categoryName)){
+                $this->view->redirect("/categories/manage","Category created successfully!","success");
+            }
+        }catch (\Exception $exception){
+            $this->view->redirect("/categories/manage",$exception);
+        }
+    }
+    /* display the delete categories by id form */
     public function delete()
     {
         if (!$this->auth->isLogged()) {
@@ -46,13 +82,13 @@ class Categories extends DefaultController
         $categoryModel = new CategoriesModel();
 
         if (!$categoryModel->existCategoryId($categoryId)){
-            $this->view->redirect("/categories/manage","This category do not exist!");
+            $this->view->redirect("/categories/manage","This categories do not exist!");
         }
 
         try{
             $categoryName = $categoryModel->getCategoryNameById($categoryId);
 
-            $this->view->render("category/delete",[
+            $this->view->render("admin/categories/delete",[
                     "name"=> $categoryName,
                     "id"=> $categoryId
                 ]
@@ -67,7 +103,7 @@ class Categories extends DefaultController
     public function deletePost(){
 
         if (!$this->auth->isLogged()) {
-            $this->view->redirect("/user/login", "You can not add new category if you are not logged in!");
+            $this->view->redirect("/user/login", "You can not add new categories if you are not logged in!");
         }
 
         if (!$this->auth->isInRole("admin")) {
@@ -87,7 +123,7 @@ class Categories extends DefaultController
         $categoryModel = new CategoriesModel();
         try{
             if (!$categoryModel->existCategoryId($categoryId)){
-                $this->view->redirect("/categories/manage","This category do not exist!");
+                $this->view->redirect("/categories/manage","This categories do not exist!");
             }
             if ($categoryModel->deleteCategory($categoryId)){
                 $this->view->redirect("/categories/manage","Category deleted successfully!","success");
@@ -97,43 +133,7 @@ class Categories extends DefaultController
         }
     }
 
-    /* handles adding new category */
-    public function addPost(){
 
-        if ($this->input->post("category_create") === null){
-            $this->view->redirect("/categories/manage");
-        }
-
-        if (!$this->auth->isLogged()) {
-            $this->view->redirect("/user/login", "You can not add new category if you are not logged in!");
-        }
-
-        if (!$this->auth->isInRole("admin")) {
-            $this->view->redirect("/user/login", "You can not manage categories if you are not Admin!");
-        }
-
-        $categoryName = $this->input->post("category_name");
-
-        $this->validate->setRule("minlength",$categoryName,3, "Category name length must be more then 3 symbols!");
-
-        if ($this->validate->validate() === false){
-            $error = $this->validate->getErrors();
-            $this->view->redirect("/categories/manage",$error);
-        }
-
-        $categoryModel = new CategoriesModel();
-        try{
-            if ($categoryModel->hasCategory($categoryName)){
-                $this->view->redirect("/categories/manage","This category already exist!");
-            }
-
-            if($categoryModel->addNewCategory($categoryName)){
-                $this->view->redirect("/categories/manage","Category created successfully!","success");
-            }
-        }catch (\Exception $exception){
-            $this->view->redirect("/categories/manage",$exception);
-        }
-    }
 
     /* Display Edit form for categories */
     public function edit()
@@ -155,11 +155,11 @@ class Categories extends DefaultController
         try{
 
             if (!$categoryModel->existCategoryId($categoryId)){
-                $this->view->redirect("/categories/manage","This category do not exist!");
+                $this->view->redirect("/categories/manage","This categories do not exist!");
             }
             $categoryName = $categoryModel->getCategoryNameById($categoryId);
 
-            $this->view->render("category/edit",[
+            $this->view->render("admin/categories/edit",[
                     "name"=> $categoryName,
                     "id"=> $categoryId
                 ]
@@ -175,7 +175,7 @@ class Categories extends DefaultController
     public function editPost()
     {
         if (!$this->auth->isLogged()) {
-            $this->view->redirect("/user/login", "You can not add new category if you are not logged in!");
+            $this->view->redirect("/user/login", "You can not add new categories if you are not logged in!");
         }
 
         if (!$this->auth->isInRole("admin")) {
@@ -195,14 +195,18 @@ class Categories extends DefaultController
         $categoryName = $this->input->post("name");
 
         $categoryModel = new CategoriesModel();
+
         try{
             if (!$categoryModel->existCategoryId($categoryId)){
-                $this->view->redirect("/categories/manage","This category do not exist!");
+                $this->view->redirect("/categories/manage","This categories do not exist!");
             }
 
             if ($categoryModel->editCategory($categoryName, $categoryId)){
                 $this->view->redirect("/categories/manage","Category edited successfully!","success");
+            } else {
+                $this->view->redirect("/categories/manage","You did not change anything ?");
             }
+
         }catch (\Exception $exception) {
             $this->view->redirect("/categories/manage", $exception->getMessage());
         }

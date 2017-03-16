@@ -44,7 +44,7 @@ class Article extends DefaultController
         $content = $input->post('content');
 
         if (empty($input->post('selected_categories')) || count($input->post('selected_categories')) == 0) {
-            $this->view->redirect("/article/create","Article have to be in at least one category!");
+            $this->view->redirect("/article/create","Article have to be in at least one categories!");
         }
         $categories = $input->post('selected_categories');
 
@@ -188,7 +188,6 @@ class Article extends DefaultController
         }
 
         $articleModel = new ArticleModel();
-        $articleData = []; // so it will not cry like a baby ..
 
         try{
 
@@ -227,14 +226,11 @@ class Article extends DefaultController
     {
         $input = $this->input;
 
-        if (empty($input->get(0))){
+        if (empty($input->get(0,"int"))){
             $this->view->redirect("/article/edit", "There is no article id");
         }
 
         $articleID = $input->get(0,'int');
-        if (empty($articleID)){
-            $this->view->redirect("/article/edit", "This is not an valid article id!");
-        }
 
         if ($input->post('deleteArticle') === null) {
             $this->view->redirect("/article/delete");

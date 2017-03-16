@@ -33,7 +33,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
             // inserting categories
             $result = $this->prepare("INSERT INTO `article_categories` (`article_id`, `category_id`) VALUES ((SELECT article_id FROM articles WHERE author_id=? ORDER BY article_id DESC limit 1), ?)", [$author_id,$category])->execute();
             if (!$result->getAffectedRows()) {
-                $message .= "Something went wrong when adding category {$category} for article title:{$title}<br>";
+                $message .= "Something went wrong when adding categories {$category} for article title:{$title}<br>";
             }
         }
 
@@ -81,7 +81,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
             //var_dump($categoriesToDelete);
             $result = $this->prepare("DELETE FROM article_categories WHERE article_id=? and category_id=?", [$article_id,$category["category_id"]])->execute();
             if (!$result->getAffectedRows()) {
-                $message .= "Something went wrong when deleting category {$category} for article title:{$title}<br>";
+                $message .= "Something went wrong when deleting categories {$category} for article title:{$title}<br>";
             }
         }
 
@@ -89,7 +89,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
             // inserting categories
             $result = $this->prepare("INSERT INTO `article_categories` (`article_id`, `category_id`) VALUES (?, ?)", [$article_id,$category])->execute();
             if (!$result->getAffectedRows()) {
-                $message .= "Something went wrong when adding category {$category} for article title:{$title}<br>";
+                $message .= "Something went wrong when adding categories {$category} for article title:{$title}<br>";
             }
         }
 

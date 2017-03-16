@@ -126,6 +126,11 @@ class UserModel extends \MVC\Auth
         return (bool) $result->getAffectedRows();
     }
 
+    public function getAllUsers():array {
+        $result = $this->prepare("SELECT id,username,real_name,email,creation_date,profile_pic FROM users ORDER BY creation_date DESC ", [])->execute();
+
+        return $result->fetchAllAssoc() ;
+    }
     private function getCrypt() {
         if ($this->crypt === null) {
             $this->crypt    = \MVC\Crypt::getInstance();
@@ -133,5 +138,23 @@ class UserModel extends \MVC\Auth
         return $this->crypt;
     }
 
+    public function getRolesById($id){
 
+        $result = $this->prepare('Select role_name FROM user_roles AS ur Join roles AS r ON ur.role_id=r.id WHERE ur.user_id=?', [$id])->execute();
+        $result = $result->fetchAllAssoc();
+        if (count($result) == 0) {
+            return [];
+        }
+        $userRoles = [];
+        foreach ($result as $resultArr){
+            $userRoles[] =$resultArr["role_name"] ;
+        }
+        return $userRoles;
+
+    }
+    public function deleteUserById($userId){
+        $result = $this->prepare(' DELETE FROM user_roles WHERE user_id=?', [$userId])->execute();
+        $result = $this->prepare(' DELETE FROM users WHERE id=?', [$userId])->execute();
+        return (bool) $result->getAffectedRows();
+    }
 }
