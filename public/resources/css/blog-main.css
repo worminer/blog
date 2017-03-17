@@ -83,4 +83,8 @@ footer {
     width: 40px;
     height: 50px
 }
+.article-content p:before {
+  border: 1px solid red;
+  clear: both;
+}
 /** End of Contact/show **/

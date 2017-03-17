@@ -117,11 +117,11 @@ class Article extends DefaultController
         $input = $this->input;
 
         if ($input->post('editArticle') === null){
-            $this->view->redirect("/article/edit");
+            $this->view->redirect("/article/myArticles");
         }
 
         if (empty($input->get(0,"int"))){
-            $this->view->redirect("/article/edit", "There is no article id");
+            $this->view->redirect("/article/myArticles", "There is no article id");
         }
 
         $articleID = $input->get(0,'int');
@@ -151,7 +151,7 @@ class Article extends DefaultController
             $articleAuthorId = $articleModel->getAuthorIdFromArticle($articleID);
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
-            $this->view->redirect("/article/edit", $errorMessage , "error");
+            $this->view->redirect("/article/myArticles", $errorMessage , "error");
         }
 
         if ($articleAuthorId == $user_id) {
@@ -163,10 +163,10 @@ class Article extends DefaultController
 
             }catch (\Exception $exception) {
                 $errorMessage = $exception->getMessage();
-                $this->view->redirect("/article/edit/{$articleID}", $errorMessage, "error");
+                $this->view->redirect("/article/myArticles/{$articleID}", $errorMessage, "error");
             }
         }else{
-            $this->view->redirect("/article/allPost", "Sorry you are not the author of this Article!");
+            $this->view->redirect("/article/AllArticles", "Sorry you are not the author of this Article!");
         }
 
     }
@@ -175,13 +175,10 @@ class Article extends DefaultController
     public function delete()
     {
         $input = $this->input;
-        if (empty($input->get(0))){
-            $this->view->redirect("/article/edit", "There is no article id!");
+        if (empty($input->get(0,"int"))){
+            $this->view->redirect("/article/myArticles", "There is no article id!");
         }
         $articleID = $input->get(0,'int');
-        if (empty($articleID)){
-            $this->view->redirect("/article/edit", "This is not an valid article id!");
-        }
 
         if (!$this->auth->isLogged()) {
             $this->view->redirect("/user/login", "You cant delete an Article if you are not logged in!");
@@ -227,13 +224,13 @@ class Article extends DefaultController
         $input = $this->input;
 
         if (empty($input->get(0,"int"))){
-            $this->view->redirect("/article/edit", "There is no article id");
+            $this->view->redirect("/article/myArticles", "There is no article id");
         }
 
         $articleID = $input->get(0,'int');
 
         if ($input->post('deleteArticle') === null) {
-            $this->view->redirect("/article/delete");
+            $this->view->redirect("/article/myArticles");
         }
 
         if (!$this->auth->isLogged()) {
@@ -247,7 +244,7 @@ class Article extends DefaultController
             $articleAuthorId = $articleModel->getAuthorIdFromArticle($articleID);
         }catch (\Exception $exception){
             $errorMessage = $exception->getMessage();
-            $this->view->redirect("/article/edit", $errorMessage , "error");
+            $this->view->redirect("/article/myArticles", $errorMessage , "error");
         }
 
         if ($articleAuthorId == $user_id) {
@@ -259,10 +256,10 @@ class Article extends DefaultController
 
             }catch (\Exception $exception) {
                 $errorMessage = $exception->getMessage();
-                $this->view->redirect("/article/delete/{$articleID}", $errorMessage, "error");
+                $this->view->redirect("/article/myArticles/{$articleID}", $errorMessage, "error");
             }
         }else{
-            $this->view->redirect("/article/allPost", "Sorry you are not the author of this Article!");
+            $this->view->redirect("/article/AllArticles", "Sorry you are not the author of this Article!");
         }
         // new new
     }
