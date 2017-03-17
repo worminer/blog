@@ -1,7 +1,8 @@
-<div id="Latest albums">
-    <h2>Latest Albums added</h2>
+
     <div id="contain2">
-		<?php 
+
+		<?php
+
 			$query= mysql_query("SELECT id,albumName,albumCategories,albumTags,albumRating
 			FROM albums");
 			while($run=mysql_fetch_array($query)){

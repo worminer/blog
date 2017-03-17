@@ -60,6 +60,6 @@
         <input type="text" name="albumTags" placeholder="Enter album tags.."/><br/>
         <input type="submit" value="Submit"/>
     </form>
-</div>
+</div> <?php include('./footer.inc.php'); ?>
 </body>
 </html>
