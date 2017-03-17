@@ -34,10 +34,29 @@ html{
     height: 150px;
 }
 #header{
-    width:100%;
     margin: 5px auto;
     padding: 25px 150px;
+     position: relative;
 }
+
+
+#footer {
+	clear: both;
+	background-color: #484452;
+	color: #FFF;
+	padding:12px;
+	width:100%;
+	 position: absolute;
+	bottom:0;
+}
+#footer p {
+	margin-bottom:0;
+	font-size: 90%;
+	font-weight:bold;
+
+}
+
+
 
 #logo{
     float:left;

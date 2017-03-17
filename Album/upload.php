@@ -85,6 +85,6 @@ if(isset($_POST['upload'])){
     <input type='file' name='file'/><br/><br/>
     <input type="submit" name="upload" value="Upload" />
 </form>
-<p>Upload only images not bigger than 5MB</p>
+<p>Upload only images not bigger than 5MB</p></div>  <?php include('./footer.inc.php'); ?>
 </body>
 </html>
