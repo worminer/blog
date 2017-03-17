@@ -17,6 +17,10 @@ class CategoriesModel extends PdoMysql
         $result = $this->prepare('SELECT `id`, `name` FROM `categories`')->execute();
         return $result->fetchAllAssoc();
     }
+    public function countArticlesInCategoryById($categoryId):int{
+        $result = $this->prepare('SELECT id FROM article_categories WHERE category_id=?', [$categoryId])->execute();
+        return count($result->fetchAllAssoc());
+    }
 
     public function hasCategory(string $categoryName):bool{
 

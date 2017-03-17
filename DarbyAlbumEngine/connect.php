@@ -1,5 +1,6 @@
 <?php
-    mysql_connect('localhost','darby_root','DarbyProject1234');
+	mysqli_connect("127.0.0.1", "root", "", "album");
+    //mysql_connect('localhost','root','');
 
-    mysql_select_db('darby_album');
+    //mysql_select_db('album');
 ?>

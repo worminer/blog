@@ -388,12 +388,11 @@ class View {
         }
 
         $currentVar = $matchesIF[3];  // get the variable name
-        $existVariable = null;
+        $existVariable = false;
+        $displayElse = false;
         // check if variable exist and if it is not we return the empty input
         if (array_key_exists($currentVar,$variablePool)) {
             $existVariable = (bool)$variablePool[$currentVar];
-        } else {
-            return '';
         }
 
         // check if there is and else block

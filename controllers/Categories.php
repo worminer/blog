@@ -1,6 +1,7 @@
 <?php
 namespace Controllers;
 
+use Models\ArticleModel;
 use Models\CategoriesModel;
 use MVC\DefaultController;
 
@@ -23,6 +24,48 @@ class Categories extends DefaultController
             $this->view->render("admin/categories/manage",["categories"=> $categories]);
         }catch (\Exception $exception){
             $this->view->redirect("/user/login/",$exception->getMessage());
+        }
+
+    }
+
+    public function showCategoryId(){
+        if (empty($this->input->get(0,"int"))){
+            $this->view->redirect("/categories/manage");
+        }
+
+        $categoryId = $this->input->get(0,"int");
+        $articlesModel = new ArticleModel();
+        $categoriesModel = new CategoriesModel();
+
+        try{
+            $categoryArticles = $articlesModel->getArticlesByCategoryId($categoryId);
+
+            foreach ($categoryArticles as $key => $categoryArticle) {
+
+                $articleCategories = $articlesModel->getArticleCategoriesByArticleId($categoryArticle['article_id']);
+                $categoryString = '';
+                $counter = count($articleCategories);
+                foreach ($articleCategories as $articleCategory) {
+                    $categoryString .=  $articleCategory["name"];
+                    if ($counter > 1) {
+                        $categoryString .= ", ";
+                    }
+                    $counter--;
+                }
+
+                if ($categoryString == '') {
+                    $categoryString = 'There are categories for this article!';
+                }
+                $categoryArticles[$key]['categories_string'] = $categoryString;
+            }
+            //var_dump($categoryArticles);
+            $this->view->render("/categories/allArticlesInCategory",[
+                    "allArticlesInCategory" => $categoryArticles
+                ]
+            );
+
+        }catch (\Exception $exception){
+            $this->view->redirect("/home/index", $exception->getMessage());
         }
 
     }

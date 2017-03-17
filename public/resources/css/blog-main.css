@@ -90,4 +90,19 @@ footer {
 }
 h2 { font-family: "Roboto", cursive; margin: 0 0 50px; text-align: center;
 }
+
+ul li a.li-button {
+  text-decoration: none;
+  display: block;
+  height: 25px;
+  line-height: 25px;
+}
+.carousel .carousel-caption h3,
+.carousel .carousel-caption p {
+  text-shadow: 0 0 20px black;
+}
+.carousel .item img {
+  background: url("../images/users/NoProfilePic.jpg") no-repeat;
+  background-size: cover;
+}
 /** End of Contact/show **/

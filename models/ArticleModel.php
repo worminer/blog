@@ -44,6 +44,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
         return true;
     }
 
+
     public function editArticle($title, $content, $article_id, array $categories):bool {
         $result = $this->prepare("UPDATE `articles` SET `title`=?,`content`=? WHERE `article_id`=?", [$title, $content, $article_id]);
         $result->execute();
@@ -120,15 +121,30 @@ class ArticleModel extends \MVC\Database\PdoMysql
         }
        return $result->fetchRllAssoc()['author_id'];
     }
+    public function getArticlesLimit($limit){
 
-    public function getAllArticles():array
-    {
-        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id ORDER BY created_at DESC ");
-        $result->execute();
+        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id ORDER BY created_at DESC LIMIT ? ",[$limit])->execute();
+
         if  (!$result->getAffectedRows()){
             throw new \Exception("Error: The request is not fulfilled!");
         }
-        return $result = $result->fetchAllAssoc();
+        return  $result->fetchAllAssoc();
+    }
+
+    public function getAllArticles():array
+    {
+        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id ORDER BY created_at DESC ")->execute();
+
+        if  (!$result->getAffectedRows()){
+            throw new \Exception("Error: The request is not fulfilled!");
+        }
+        return  $result->fetchAllAssoc();
+    }
+    public  function getArticlesByCategoryId($categoryId){
+        $result=$this->prepare("SELECT a.article_id,title,content,created_at,real_name FROM articles AS a 
+                                JOIN article_categories AS ac ON a.article_id = ac.article_id 
+                                JOIN USERS as u ON a.author_id=u.id  WHERE ac.category_id = ? ORDER BY created_at DESC ",[$categoryId])->execute();
+        return $result->fetchAllAssoc();
     }
 
     public function getArticlesByAuthorId($author_id):array {

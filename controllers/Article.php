@@ -353,7 +353,6 @@ class Article extends DefaultController
         try{
             $articleData = $articleModel->getArticleByArticleId($articleID);
 
-            $articleUpdated = [];
 
             $articleCategories =  $articleModel->getArticleCategoriesByArticleId($articleData["article_id"]);
             $articleData["categories_string"] = '';

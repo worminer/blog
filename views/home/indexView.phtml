@@ -1,63 +1,61 @@
 <!-- Blog Entries Column -->
 
-<div class="col-md-8">
+<div class="col-md-9">
     <div class="well">
-        <h1>Welcome to our cool blog system</h1>
+        <div class="text-center">
+            <h1>Welcome our Blog System</h1>
+        </div>
 
-        <a href="Action/checkLogin/">Login</a>
+
 
         <div id="myCarousel" class="carousel slide" data-ride="carousel">
             <!-- Indicators -->
             <ol class="carousel-indicators">
                 <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                <li data-target="#myCarousel" data-slide-to="1"></li>
-                <li data-target="#myCarousel" data-slide-to="2"></li>
-                <li data-target="#myCarousel" data-slide-to="3"></li>
+                {{#each lastArticles}}
+                <li data-target="#myCarousel" data-slide-to="{{#number}}" class=""></li>
+                {{/each}}
             </ol>
 
             <div class="carousel-inner" role="listbox">
+                {{#if firstArticle}}
+                    <div class="item active">
+                        <a href="/article/articleId/{#firstArticle['article_id']}" > <!-- Article Path -->
+                            <img src="{#firstArticle['profile_pic']}"
+                                width="460"
+                                height="345"
+                            > <!-- Article Image Path -->
+                            <div class="carousel-caption">
+                                <h3>"{#firstArticle["title"]}"</h3>
+                                <p>Author: "{#firstArticle["real_name"]}"</p>
+                            </div>
+                        </a>
+                    </div>
+                    {{#each lastArticles}}
+                        <div class="item">
+                            <a href="/article/articleId/{{value['article_id']}}" > <!-- Article Path -->
+                                <img src="{{value['profile_pic']}}"
+                                     alt="no picture" width="460" height="345">
+                                <div class="carousel-caption">
+                                    <h3>"{{value['title']}}"</h3>
+                                    <p>Author: "{{value['real_name']}}"</p>
+                                </div>
+                            </a>
+                        </div>
+                    {{/each}}
+                {{else}}
                 <div class="item active">
                     <a href="/user/register"> <!-- Article Path -->
                         <img src=""
                              alt="no picture" width="460" height="345"> <!-- Article Image Path -->
                         <div class="carousel-caption">
-                            <h3>"Article Name"</h3>
-                            <p>"Resume about the article /or smth"</p>
+                            <h3>"There are no articles!"</h3>
+                            <p>"No articles found in DB.. You can be the fist to Write one"</p>
                         </div>
                     </a>
                 </div>
-                <div class="item">
-                    <a href=""> <!-- Article Path -->
-                        <img src=""
-                             alt="no picture" width="460" height="345">
-                        <div class="carousel-caption">
-                            <h3>"Article Name"</h3>
-                            <p>"Resume about the article /or smth"</p>
-                        </div>
-                    </a>
-                </div>
+                {{/if}}
 
-                <div class="item">
-                    <a href=""><!-- Article Path -->
-                        <img src=""
-                             alt="no picture" width="460" height="345">
-                        <div class="carousel-caption">
-                            <h3>"Article Name"</h3>
-                            <p>"Resume about the article /or smth"</p>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="item">
-                    <a href="">
-                        <img src=""
-                             alt="no picture" width="460" height="345">
-                        <div class="carousel-caption">
-                            <h3>"Article Name"</h3>
-                            <p>"Resume about the article /or smth"</p>
-                        </div>
-                    </a>
-                </div>
 
             </div>
 
@@ -74,6 +72,6 @@
     </div>
 </div>
 <!-- Blog Sidebar Widgets Column -->
-<div class="col-md-4">
+<div class="col-md-3">
     {>sidebar}
 </div>
