@@ -38,7 +38,7 @@ class Home extends DefaultController
                 "firstArticle" => $fistArticle
             ]);
         }catch (\Exception $exception){
-            echo "something went wrong!!<br>".$exception->getMessage();
+            $this->view->render("home/index",[],$exception->getMessage());
         }
     }
 }

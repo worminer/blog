@@ -59,7 +59,7 @@ class User extends DefaultController
 
         try{
             if ($userModel->authenticate($email,$password)) {
-                $this->view->redirect("/");
+                $this->view->redirect("/user/profile");
             }
         }catch (\Exception $exception){
             // if there is a problem with the login we log the message and redirect to the registration page
