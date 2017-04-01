@@ -2,7 +2,6 @@
 namespace MVC;
 
 use MVC\Session\SessionInterface;
-
 require_once("AutoLoader.php");
 
 
@@ -100,6 +99,7 @@ class App {
         if ($this->_config->getConfigFolderPath() == null) {
             $this->_config->setConfigFolder("../config");
         }
+
         // debuging timert
         if ($this->_config->app["debugging"]) {
             $this->applicationStartedTimer = microtime(true);
@@ -134,9 +134,9 @@ class App {
             }
         }
 
+
         // initialize authentication coontroller
         $this->getAuth();
-
         // and we dispatch ..
         $this->_frontController->dispatcher();
     }
@@ -158,6 +158,7 @@ class App {
     }
 
     public function getAuth(){
+
         if ($this->_auth == null) {
             $this->_auth = Auth::getInstance();
         }
@@ -185,7 +186,7 @@ class App {
 
         //check if connection name is not false,empty null or whatever
         if (!$connectionName) {
-            throw new \Exception("ERROR DB: Connection name is not set!",500);
+            throw new \Exception("ERROR DB: Connection name is not set!");
         }
         // check if the connection is not cached
         if (isset($this->_DbConnections[$connectionName])) {
@@ -195,15 +196,17 @@ class App {
         $dbConfigs = $this->_config->database;
         // check if there is a config file for this connectrion
         if (!isset($dbConfigs[$connectionName])) {
-            throw new \Exception("ERROR DB: There is no such configuration in the database config file",500);
+            throw new \Exception("ERROR DB: There is no such configuration in the database config file");
         }
         //get the connection settings
         $dbConfig = $dbConfigs[$connectionName];
         //createArticle new PDO connection
+
         $currentDBConn = new \PDO($dbConfig["connection_url"],
             $dbConfig["username"],
             $dbConfig["password"],
             $dbConfig["pdo_options"]);
+
         //Cache the connection for future use
         $this->_DbConnections[$connectionName] = $currentDBConn;
         // return the connection
@@ -243,23 +246,23 @@ class App {
         return $this->_inputData;
     }
 
-    public function _exceptionHandler(\Exception $exception){
+//    public function _exceptionHandler(\Exception $exception){
+//
+//        if (isset($this->_config) && isset($this->_config->app["displayExceptions"])) {
+//            echo "<pre>" . print_r($exception, true) . "</pre>";
+//        } else {
+//            $this->displayError($exception->getCode());
+//        }
+//    }
 
-        if (isset($this->_config) && isset($this->_config->app["displayExceptions"])) {
-            echo "<pre>" . print_r($exception, true) . "</pre>";
-        } else {
-            $this->displayError($exception->getCode());
-        }
-    }
-
-    public function displayError($errorCode) {
-        try{
-            $this->view()->render("errors/".$errorCode);
-        }catch (\Exception $e){
-            die($e->getMessage());
-        }
-
-    }
+//    public function displayError($errorCode) {
+//        try{
+//            $this->view()->render("errors/".$errorCode);
+//        }catch (\Exception $e){
+//            die($e->getMessage());
+//        }
+//
+//    }
 
     /**
      *

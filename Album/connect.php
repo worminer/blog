@@ -1,3 +1,3 @@
 <?php
-mysqli_connect('localhost' , 'root', '', 'album_Database');
+mysqli_connect('localhost' , 'root', '', 'album');
 ?>

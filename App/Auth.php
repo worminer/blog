@@ -39,7 +39,6 @@ class Auth extends PdoMysql
         parent::__construct();
         $this->isValidSessionToken();
         $global = GlobalVariables::getInstance();
-
         $global->setGlobalVar("isLogged",$this->isLogged());
         $global->setGlobalVar("isUser",$this->isInRole('user'));
         $global->setGlobalVar("isAdmin",$this->isInRole('admin'));

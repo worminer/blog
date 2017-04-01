@@ -13,7 +13,7 @@ $db["default"] = [
                         PDO::ATTR_EMULATE_PREPARES => false
     ],
 
-    "db_name" => "darby_blog",  // DB name
+    "db_name" => "darby",  // DB name
     "username" => "root",       // DB username
     "password" => "",           // DB password
 ];

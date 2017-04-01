@@ -179,12 +179,12 @@ class Validation
         if ($val2 instanceof \Closure) {
             return (boolean) call_user_func($val2, $val1);
         } else {
-            throw new \Exception('Invalid validation function', 500);
+            throw new \Exception('Invalid validation function');
         }
     }
 
     public function __call($name, $arguments)
     {
-        throw new \Exception("ERROR: Validation rule does not exist -> {$name}",500);
+        throw new \Exception("ERROR: Validation rule does not exist -> {$name}");
     }
 }

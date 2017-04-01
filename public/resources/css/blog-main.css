@@ -105,4 +105,7 @@ ul li a.li-button {
   background: url("../images/users/NoProfilePic.jpg") no-repeat;
   background-size: cover;
 }
+.container {
+    word-wrap: break-word;
+}
 /** End of Contact/show **/
