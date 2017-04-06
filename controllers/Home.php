@@ -38,7 +38,7 @@ class Home extends DefaultController
                 "firstArticle" => $fistArticle
             ]);
         }catch (\Exception $exception){
-            $this->view->render("home/index",[],$exception->getMessage());
+            $this->view->render("home/index",[]);
         }
     }
 }

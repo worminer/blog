@@ -123,7 +123,7 @@ class ArticleModel extends \MVC\Database\PdoMysql
     }
     public function getArticlesLimit($limit){
 
-        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id ORDER BY created_at DESC LIMIT ? ",[$limit])->execute();
+        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN users as u ON a.author_id=u.id ORDER BY created_at DESC LIMIT ? ",[$limit])->execute();
 
         if  (!$result->getAffectedRows()){
             throw new \Exception("Error: The request is not fulfilled!");
@@ -133,27 +133,27 @@ class ArticleModel extends \MVC\Database\PdoMysql
 
     public function getAllArticles():array
     {
-        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id ORDER BY created_at DESC ")->execute();
+        $result = $this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN users as u ON a.author_id=u.id ORDER BY created_at DESC ")->execute();
 
         if  (!$result->getAffectedRows()){
-            throw new \Exception("Error: The request is not fulfilled!");
+            return [];
         }
         return  $result->fetchAllAssoc();
     }
     public  function getArticlesByCategoryId($categoryId){
         $result=$this->prepare("SELECT a.article_id,title,content,created_at,real_name FROM articles AS a 
                                 JOIN article_categories AS ac ON a.article_id = ac.article_id 
-                                JOIN USERS as u ON a.author_id=u.id  WHERE ac.category_id = ? ORDER BY created_at DESC ",[$categoryId])->execute();
+                                JOIN users as u ON a.author_id=u.id  WHERE ac.category_id = ? ORDER BY created_at DESC ",[$categoryId])->execute();
         return $result->fetchAllAssoc();
     }
 
     public function getArticlesByAuthorId($author_id):array {
-        $result=$this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id WHERE `author_id`=? ORDER BY created_at DESC ",[$author_id])->execute();
+        $result=$this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN users as u ON a.author_id=u.id WHERE `author_id`=? ORDER BY created_at DESC ",[$author_id])->execute();
         return $result->fetchAllAssoc();
     }
 
     public function getArticleByArticleId($article_id):array {
-        $result=$this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN USERS as u ON a.author_id=u.id WHERE `article_id`=?",[$article_id])->execute();
+        $result=$this->prepare("SELECT article_id,author_id,title,content,real_name,created_at FROM articles as a INNER JOIN users as u ON a.author_id=u.id WHERE `article_id`=?",[$article_id])->execute();
         $result = $result->fetchRllAssoc(); // this is just because it returns false or array and the interpreter gets the return type wrong
         if ($result === false) {
             throw new \Exception("Data for this article cant be found!");

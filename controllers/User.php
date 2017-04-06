@@ -222,8 +222,9 @@ class User extends DefaultController
         $publicPath = $publicPath.$imageName.'.'.$imageFileType;
         $currentUserId = $this->auth->getCurrentUserId();
         try {
+            $target_file = str_replace('/',DIRECTORY_SEPARATOR,$target_file);
+            $target_file = str_replace('\\',DIRECTORY_SEPARATOR,$target_file);
             move_uploaded_file($fileInfo["tmp_name"], $target_file);
-
             $userModel = new UserModel();
             if ($userModel->setUserProfilePic($currentUserId,$publicPath)) {
                 $this->view->redirect("/user/profile", "Profile picture updated successfully", "success");
